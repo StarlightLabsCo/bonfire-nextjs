@@ -26,8 +26,6 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
       if (data.type === 'instance-created') {
         router.push(`/instances/${data.payload.instanceId}`);
       } else if (data.type === 'audio') {
-        console.log('playing audio');
-
         const audioBase64 = data.payload.audio;
         const audioSrc = `data:audio/wav;base64,${audioBase64}`;
         const audio = new Audio(audioSrc);
