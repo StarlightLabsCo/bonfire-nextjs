@@ -21,5 +21,27 @@ export function Lobby({
     }
   }, [socket]);
 
-  return <div className="flex flex-col">lobby</div>;
+  // TODO: have button that sends message to server
+  const createInstance = () => {
+    if (!socket) {
+      console.log('socket not connected');
+      return;
+    }
+
+    socket.send(
+      JSON.stringify({
+        type: 'create-instance',
+        payload: {
+          userId: user.id,
+          description: 'test instance',
+        },
+      }),
+    );
+  };
+
+  return (
+    <div className="flex flex-col">
+      <button onClick={createInstance}>Create Instance</button>
+    </div>
+  );
 }

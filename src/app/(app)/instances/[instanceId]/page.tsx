@@ -12,7 +12,5 @@ export default async function Instance({
     redirect('/login');
   }
 
-  // const instance = await db
-
   return <>Instance Id {params.instanceId}</>;
 }

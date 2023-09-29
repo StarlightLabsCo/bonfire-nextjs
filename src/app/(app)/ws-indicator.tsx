@@ -25,6 +25,6 @@ export function WebSocketStatusIndicator() {
         'w-4 h-4 rounded-full',
         status === 'OPEN' ? 'bg-green-500' : 'bg-red-500',
       )}
-    ></div>
+    />
   );
 }
