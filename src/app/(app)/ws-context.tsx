@@ -10,8 +10,9 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   const [socket, setSocket] = useState<WebSocket | null>(null);
 
   const audioContext = useRef<AudioContext | null>(null);
-  const audioBufferQueue = useRef<AudioBuffer[]>([]);
+  const audioBufferQueue = useRef<(AudioBuffer & { index: number })[]>([]);
   const nextStartTimeRef = useRef<number>(0);
+  const lastIndexPlayed = useRef<number>(-1);
 
   const router = useRouter();
   const { toast } = useToast();
@@ -24,17 +25,31 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
 
     const scheduleBuffers = () => {
       while (audioBufferQueue.current.length > 0) {
-        const audioBuffer = audioBufferQueue.current.shift();
-        if (audioBuffer && audioContext.current) {
-          if (nextStartTimeRef.current < audioContext.current.currentTime) {
-            nextStartTimeRef.current = audioContext.current.currentTime;
+        const nextBuffer = audioBufferQueue.current[0]; // Peek at the next buffer but don't remove it yet
+        if (nextBuffer.index === lastIndexPlayed.current + 1) {
+          // Check if this is the buffer we expect next
+
+          if (audioContext.current) {
+            if (nextStartTimeRef.current < audioContext.current.currentTime) {
+              nextStartTimeRef.current = audioContext.current.currentTime;
+            }
+
+            const source = audioContext.current.createBufferSource();
+            source.buffer = nextBuffer;
+            source.connect(audioContext.current.destination);
+            source.start(nextStartTimeRef.current);
+
+            nextStartTimeRef.current += nextBuffer.duration;
           }
 
-          const source = audioContext.current.createBufferSource();
-          source.buffer = audioBuffer;
-          source.connect(audioContext.current.destination);
-          source.start(nextStartTimeRef.current);
-          nextStartTimeRef.current += audioBuffer.duration;
+          // Update last played index
+          lastIndexPlayed.current = nextBuffer.index;
+
+          // Remove the scheduled buffer from the queue
+          audioBufferQueue.current.shift();
+        } else {
+          // If this buffer isn't the one we expect next, break the loop
+          break;
         }
       }
     };
@@ -50,13 +65,11 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
 
       if (data.type === 'instance-created') {
         router.push(`/instances/${data.payload.instanceId}`);
-      } else if (data.type === 'error') {
-        toast({
-          title: 'Error',
-          description: data.payload.message,
-        });
-      } else if (data.audio) {
-        const binaryData = atob(data.audio);
+      } else if (data.type === 'audio') {
+        const index = data.payload.index;
+        const audio = data.payload.audio;
+
+        const binaryData = atob(audio);
         const len = binaryData.length;
         const buffer = new ArrayBuffer(len);
         const view = new Uint8Array(buffer);
@@ -67,8 +80,20 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
 
         if (!audioContext.current) return;
         const audioBuffer = await audioContext.current.decodeAudioData(buffer);
-        audioBufferQueue.current.push(audioBuffer);
+
+        (audioBuffer as AudioBuffer & { index: number }).index = index;
+        audioBufferQueue.current.push(
+          audioBuffer as AudioBuffer & { index: number },
+        );
+
+        audioBufferQueue.current.sort((a, b) => a.index - b.index);
+
         scheduleBuffers();
+      } else if (data.type === 'error') {
+        toast({
+          title: 'Error',
+          description: data.payload.message,
+        });
       }
     };
 
