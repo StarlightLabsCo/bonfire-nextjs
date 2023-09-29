@@ -17,8 +17,10 @@ export default async function AppLayout({
 
   return (
     <WebSocketProvider>
-      <Navbar user={user} />
-      {children}
+      <div className="flex flex-col min-h-screen mx-auto bg-neutral-950">
+        <Navbar user={user} />
+        {children}
+      </div>
       <Toaster />
     </WebSocketProvider>
   );
