@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { WebSocketContext } from './ws-context';
 import { User } from 'next-auth';
 
@@ -12,6 +12,14 @@ export function Lobby({
   } & User;
 }) {
   const socket = useContext(WebSocketContext);
+
+  // TODO: make it so we send a welcome message once user's audio is enabled.
+  //  socket.send(
+  //    JSON.stringify({
+  //      type: 'welcome',
+  //      payload: {},
+  //    }),
+  //  );
 
   const createInstance = () => {
     if (!socket) {

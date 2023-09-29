@@ -13,6 +13,10 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   const { toast } = useToast();
 
   useEffect(() => {
+    if (socket !== null) {
+      return;
+    }
+
     // Create WebSocket connection
     const ws = new WebSocket('ws://localhost:3001');
     setSocket(ws);
@@ -22,7 +26,6 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
 
       const data = JSON.parse(event.data);
 
-      // TODO: make nicer
       if (data.type === 'instance-created') {
         router.push(`/instances/${data.payload.instanceId}`);
       } else if (data.type === 'audio') {

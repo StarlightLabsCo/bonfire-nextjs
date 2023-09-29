@@ -1,6 +1,6 @@
 'use client';
 
-import * as React from 'react';
+import { useState } from 'react';
 
 import { cn } from '@/lib/utils';
 import { Icons } from '@/components/icons';
@@ -11,7 +11,7 @@ import { signIn } from 'next-auth/react';
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   return (
     <div className={cn('grid gap-6', className)} {...props}>
