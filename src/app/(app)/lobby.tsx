@@ -6,7 +6,6 @@ import { User } from 'next-auth';
 import { PaperPlaneIcon } from '@radix-ui/react-icons';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
-import { MessagesContext } from './messages-context';
 
 const images = [
   'https://cdn.midjourney.com/9ed73ce9-cea2-46f3-b846-f5a7dc7d56ce/0_0_384_N.webp',
@@ -21,11 +20,7 @@ export function Lobby({
     id: string;
   } & User;
 }) {
-  const { setMessages } = useContext(MessagesContext);
-
-  const [imageIndex, setImageIndex] = useState(
-    Math.floor(Math.random() * images.length),
-  );
+  const [imageIndex, setImageIndex] = useState(0);
   const [imageURL, setImageURL] = useState(images[imageIndex]);
 
   const [description, setDescription] = useState('');
@@ -99,10 +94,12 @@ export function Lobby({
           <img
             className="absolute aspect-1 w-3/4 h-full inset-0 object-cover mx-auto rounded-full opacity-100 blur-lg"
             src={imageURL}
+            alt="loadingBlur"
           />
           <img
             className="img-blur relative aspect-1 w-3/4 h-3/4 object-cover mx-auto rounded-full -z-1"
             src={imageURL}
+            alt="loading"
           />
         </div>
       </div>
