@@ -66,6 +66,23 @@
   }
 }
 
+@layer components {
+  .collapse-input {
+    animation: collapse-input-animation 0.75s ease-in-out forwards;
+  }
+
+  @keyframes collapse-input-animation {
+    0% {
+      max-width: 36rem;
+      opacity: 1;
+    }
+    100% {
+      max-width: 0;
+      opacity: 0;
+    }
+  }
+}
+
 @layer base {
   * {
     @apply border-border;

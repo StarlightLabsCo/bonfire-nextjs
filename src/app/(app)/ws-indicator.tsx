@@ -22,7 +22,7 @@ export function WebSocketStatusIndicator() {
   return (
     <div
       className={cn(
-        'w-4 h-4 rounded-full',
+        'w-2 h-2 rounded-full',
         status === 'OPEN' ? 'bg-green-500' : 'bg-red-500',
       )}
     />
