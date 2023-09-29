@@ -81,6 +81,24 @@
       opacity: 0;
     }
   }
+
+  @keyframes blur-unblur {
+    0%,
+    2% {
+      filter: blur(15px);
+    }
+    50% {
+      filter: blur(0);
+    }
+    98%,
+    100% {
+      filter: blur(15px);
+    }
+  }
+
+  .animate-blur {
+    animation: blur-unblur 5s ease-in-out infinite;
+  }
 }
 
 @layer base {

@@ -50,6 +50,17 @@ export function Lobby({
   useEffect(() => {
     // cycle through images every few seconds
     const interval = setInterval(() => {
+      // Add the blur class
+      const blurClass = 'animate-blur';
+      const imgElements = document.querySelectorAll('.img-blur');
+      imgElements.forEach((img) => img.classList.add(blurClass));
+
+      // Remove blur class after animation duration (in this example, 5 seconds)
+      setTimeout(() => {
+        imgElements.forEach((img) => img.classList.remove(blurClass));
+      }, 5000);
+
+      // Switch image index
       setImageIndex((imageIndex) => (imageIndex + 1) % images.length);
       setImageURL(images[imageIndex]);
     }, 5000);
@@ -63,11 +74,11 @@ export function Lobby({
       <div className="relative flex items-center justify-center w-full h-full">
         <div className="relative">
           <img
-            className="absolute aspect-1 w-3/4 h-3/4 inset-0 object-cover mx-auto rounded-full opacity-100 blur-lg"
+            className="absolute aspect-1 w-3/4 h-full inset-0 object-cover mx-auto rounded-full opacity-100 blur-lg"
             src={imageURL}
           />
           <img
-            className="relative aspect-1 w-3/4 h-3/4 object-cover mx-auto rounded-full -z-1"
+            className="img-blur relative aspect-1 w-3/4 h-3/4 object-cover mx-auto rounded-full -z-1"
             src={imageURL}
           />
         </div>
