@@ -17,11 +17,10 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    // Create WebSocket connection
-    const ws = new WebSocket('ws://localhost:3001');
+    let ws = new WebSocket('ws://localhost:3001');
     setSocket(ws);
 
-    ws.onmessage = (event) => {
+    const handleMessage = (event: MessageEvent) => {
       console.log('Message from server:', event.data);
 
       const data = JSON.parse(event.data);
@@ -38,13 +37,18 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
           title: 'Error',
           description: data.payload.message,
         });
-      } else {
-        toast({
-          title: 'Success',
-          description: data.payload.message,
-        });
       }
     };
+
+    ws.addEventListener('message', handleMessage);
+    ws.addEventListener('close', () => {
+      // TODO: handle this with exponential backoff and also show a toast
+      setSocket(null);
+      setTimeout(() => {
+        ws = new WebSocket('ws://localhost:3001');
+        setSocket(ws);
+      }, 1000);
+    });
 
     // Cleanup WebSocket on unmount
     return () => {

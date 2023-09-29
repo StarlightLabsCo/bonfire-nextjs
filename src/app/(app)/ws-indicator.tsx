@@ -6,15 +6,23 @@ export function WebSocketStatusIndicator() {
   const socket = useContext(WebSocketContext);
   const [status, setStatus] = useState('CLOSED');
 
+  const onOpen = () => {
+    setStatus('OPEN');
+  };
+
+  const onClose = () => {
+    setStatus('CLOSED');
+  };
+
   useEffect(() => {
     if (socket) {
-      socket.onopen = () => setStatus('OPEN');
-      socket.onclose = () => setStatus('CLOSED');
+      socket.addEventListener('open', onOpen);
+      socket.addEventListener('close', onClose);
     }
     return () => {
       if (socket) {
-        socket.onopen = null;
-        socket.onclose = null;
+        socket.removeEventListener('onopen', onOpen);
+        socket.removeEventListener('onclose', onClose);
       }
     };
   }, [socket]);
