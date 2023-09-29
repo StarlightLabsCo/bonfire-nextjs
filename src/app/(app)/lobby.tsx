@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import { WebSocketContext } from './ws-context';
 import { User } from 'next-auth';
 
@@ -13,15 +13,6 @@ export function Lobby({
 }) {
   const socket = useContext(WebSocketContext);
 
-  useEffect(() => {
-    if (socket) {
-      socket.onmessage = (event) => {
-        console.log('Message from server:', event.data);
-      };
-    }
-  }, [socket]);
-
-  // TODO: have button that sends message to server
   const createInstance = () => {
     if (!socket) {
       console.log('socket not connected');
@@ -33,7 +24,7 @@ export function Lobby({
         type: 'create-instance',
         payload: {
           userId: user.id,
-          description: 'test instance',
+          description: 'test instance', // TODO: hardcoded
         },
       }),
     );
