@@ -2,9 +2,15 @@
 
 import { useContext, useEffect } from 'react';
 import { WebSocketContext } from './ws-context';
-import { WebSocketStatusIndicator } from './ws-indicator';
+import { User } from 'next-auth';
 
-export function Dashboard() {
+export function Lobby({
+  user,
+}: {
+  user: {
+    id: string;
+  } & User;
+}) {
   const socket = useContext(WebSocketContext);
 
   useEffect(() => {
@@ -15,10 +21,5 @@ export function Dashboard() {
     }
   }, [socket]);
 
-  return (
-    <>
-      <WebSocketStatusIndicator />
-      Dashboard
-    </>
-  );
+  return <div className="flex flex-col">lobby</div>;
 }

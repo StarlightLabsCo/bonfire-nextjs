@@ -57,6 +57,41 @@ model User {
   accounts Account[]
   sessions Session[]
 
+  instances Instance[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Instance {
+  id String @id @default(cuid())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  description String?
+
+  messages Message[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum MessageRole {
+  system
+  user
+  function
+}
+
+model Message {
+  id String @id @default(cuid())
+
+  instance   Instance @relation(fields: [instanceId], references: [id])
+  instanceId String
+
+  role    MessageRole
+  content String
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { WebSocketContext } from './ws-context';
+import { cn } from '@/lib/utils';
 
 export function WebSocketStatusIndicator() {
   const socket = useContext(WebSocketContext);
@@ -18,11 +19,12 @@ export function WebSocketStatusIndicator() {
     };
   }, [socket]);
 
-  const statusColor = status === 'OPEN' ? 'green' : 'red';
-
   return (
-    <div style={{ position: 'absolute', top: 0, right: 0, color: statusColor }}>
-      {status}
-    </div>
+    <div
+      className={cn(
+        'w-4 h-4 rounded-full',
+        status === 'OPEN' ? 'bg-green-500' : 'bg-red-500',
+      )}
+    ></div>
   );
 }
