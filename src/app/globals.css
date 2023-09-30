@@ -64,6 +64,13 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
   }
+
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
 
 @layer components {
@@ -71,41 +78,33 @@
     animation: collapse-input-animation 0.75s ease-in-out forwards;
   }
 
-  @keyframes collapse-input-animation {
-    0% {
-      max-width: 36rem;
+  @keyframes imageTransition {
+    0%,
+    100% {
+      opacity: 1;
+      filter: blur(0);
+    }
+    50% {
+      opacity: 0;
+      filter: blur(10px);
+    }
+  }
+
+  @keyframes background-image-transition {
+    0%,
+    100% {
       opacity: 1;
     }
-    100% {
-      max-width: 0;
+    50% {
       opacity: 0;
     }
   }
 
-  @keyframes blur-unblur {
-    0%,
-    2% {
-      filter: blur(15px);
-    }
-    50% {
-      filter: blur(0);
-    }
-    98%,
-    100% {
-      filter: blur(15px);
-    }
+  .animate-image-transition {
+    animation: imageTransition 5s ease-in-out;
   }
 
-  .animate-blur {
-    animation: blur-unblur 5s ease-in-out infinite;
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
+  .animate-background-transition {
+    animation: background-image-transition 5s ease-in-out;
   }
 }

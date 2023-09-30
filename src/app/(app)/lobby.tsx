@@ -22,10 +22,12 @@ export function Lobby({
 }) {
   const [imageIndex, setImageIndex] = useState(0);
   const [imageURL, setImageURL] = useState(images[imageIndex]);
+  const [animated, setAnimated] = useState(false);
 
   const [description, setDescription] = useState('');
   const [collapsed, setCollapsed] = useState(false);
 
+  // TODO: Move socket to a separate hook
   const socket = useContext(WebSocketContext);
 
   const createWelcome = () => {
@@ -66,40 +68,47 @@ export function Lobby({
   };
 
   useEffect(() => {
-    // cycle through images every few seconds
-    const interval = setInterval(() => {
-      // Add the blur class
-      const blurClass = 'animate-blur';
-      const imgElements = document.querySelectorAll('.img-blur');
-      imgElements.forEach((img) => img.classList.add(blurClass));
+    const cycleImage = () => {
+      setAnimated(true);
 
-      // Remove blur class after animation duration (in this example, 5 seconds)
+      // Set timeout for 2.5s (halfway through the animation) to swap the image
       setTimeout(() => {
-        imgElements.forEach((img) => img.classList.remove(blurClass));
-      }, 5000);
+        setImageIndex((oldIndex) => {
+          const newIndex = (oldIndex + 1) % images.length;
+          setImageURL(images[newIndex]);
 
-      // Switch image index
-      setImageIndex((imageIndex) => (imageIndex + 1) % images.length);
-      setImageURL(images[imageIndex]);
-    }, 5000);
+          return newIndex;
+        });
+      }, 2500);
+
+      // After 5s, end the animation (this will align with the completion of the CSS animation)
+      setTimeout(() => {
+        setAnimated(false);
+      }, 5000);
+    };
+
+    cycleImage();
+
+    const interval = setInterval(cycleImage, 6000);
 
     return () => clearInterval(interval);
-  }),
-    [];
+  }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center gap-y-5 w-full h-full p-5 grow">
+    <div className="flex flex-col items-center justify-center w-full h-full p-5 gap-y-5 grow">
       <div className="relative flex items-center justify-center w-full">
         <div className="relative">
           <img
-            className="absolute aspect-1 w-3/4 h-full inset-0 object-cover mx-auto rounded-full opacity-100 blur-lg"
+            className={`absolute inset-0 object-cover w-3/4 h-full mx-auto rounded-full opacity-100 aspect-1 blur-lg ${
+              animated ? 'animate-background-transition' : ''
+            }`}
             src={imageURL}
-            alt="loadingBlur"
           />
           <img
-            className="img-blur relative aspect-1 w-3/4 h-3/4 object-cover mx-auto rounded-full -z-1"
+            className={`relative object-cover w-3/4 mx-auto rounded-full aspect-1 h-3/4 -z-1 ${
+              animated ? 'animate-image-transition' : ''
+            }`}
             src={imageURL}
-            alt="loading"
           />
         </div>
       </div>
