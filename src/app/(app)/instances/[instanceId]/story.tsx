@@ -51,9 +51,9 @@ export function Story({
   };
 
   return (
-    <div className="flex flex-col items-center w-full h-full p-5">
+    <div className="flex flex-col items-center justify-center w-full h-full px-16">
       <div
-        className={`flex flex-col items-center w-full h-full px-20 gap-y-8 grow ${cormorantGaramond.className} leading-8 font-[400] text-lg`}
+        className={`flex flex-col items-center w-full h-full max-h-80 gap-y-8 ${cormorantGaramond.className} leading-8 font-[400] text-lg overflow-y-auto`}
       >
         {messages.map((message, index: number) =>
           message.role === 'user' ? (
@@ -70,7 +70,7 @@ export function Story({
           ),
         )}
       </div>
-      <div className="relative w-full max-w-xl mt-8 justify-self-end bg-neutral-900 rounded-2xl">
+      <div className="relative w-full mt-8 justify-self-end bg-neutral-900 rounded-2xl">
         <Input
           placeholder="What do you do?"
           className="w-full py-6 pl-4 pr-10 align-middle border-none placeholder:text-neutral-500"
