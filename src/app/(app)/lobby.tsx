@@ -114,13 +114,13 @@ export function Lobby({
       </div>
       <div
         className={cn(
-          `relative w-full max-w-xl mt-8 bg-neutral-900 rounded-2xl`,
+          `relative w-full max-w-xl mt-8`,
           collapsed ? 'collapse-input' : '',
         )}
       >
         <Input
           placeholder="Describe an adventure or leave it blank for a surprise"
-          className="w-full py-6 pl-4 pr-10 align-middle border-none placeholder:text-neutral-500"
+          className="w-full py-6 pl-4 pr-10 align-middle border-none placeholder:text-neutral-500 rounded-2xl bg-neutral-900"
           value={description}
           onChange={(event) => setDescription(event.target.value)}
           onKeyDown={(event) => {
