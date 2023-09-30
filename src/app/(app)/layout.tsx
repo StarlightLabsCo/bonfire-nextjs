@@ -19,11 +19,13 @@ export default async function AppLayout({
   return (
     <WebSocketProvider>
       <MessagesProvider>
-        <div className="flex flex-col h-screen mx-auto bg-neutral-950">
-          <Navbar user={user} />
-          {children}
+        <div className="h-screen bg-neutral-950">
+          <div className="flex flex-col h-full max-w-5xl mx-auto">
+            <Navbar user={user} />
+            {children}
+          </div>
+          <Toaster />
         </div>
-        <Toaster />
       </MessagesProvider>
     </WebSocketProvider>
   );

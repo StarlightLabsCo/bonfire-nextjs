@@ -6,6 +6,12 @@ import { useContext, useState } from 'react';
 import { MessagesContext } from '../../messages-context';
 import { WebSocketContext } from '../../ws-context';
 import { Message } from '@prisma/client';
+import { IBM_Plex_Serif } from '@next/font/google';
+
+export const cormorantGaramond = IBM_Plex_Serif({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '700'],
+});
 
 export function Story({
   instanceId,
@@ -45,21 +51,26 @@ export function Story({
   };
 
   return (
-    <div className="h-full flex flex-col items-center p-5">
-      <div className="flex flex-col items-center w-full max-w-xl h-full gap-y-5 p-5 grow">
+    <div className="flex flex-col items-center w-full h-full p-5">
+      <div
+        className={`flex flex-col items-center w-full h-full px-20 gap-y-8 grow ${cormorantGaramond.className} leading-8 font-[400] text-lg`}
+      >
         {messages.map((message, index: number) =>
           message.role === 'user' ? (
-            <div key={index} className="w-full text-right">
-              <span className="text-slate-500">{message.content}</span>
+            <div
+              key={index}
+              className="w-full pl-6 border-l-2 border-neutral-700"
+            >
+              <p className="text-neutral-500">{message.content}</p>
             </div>
           ) : (
-            <div key={index} className="w-full text-left">
-              <span>{message.content}</span>
+            <div key={index} className="w-full">
+              <p>{message.content}</p>
             </div>
           ),
         )}
       </div>
-      <div className="justify-self-end relative w-full max-w-xl mt-8 bg-neutral-900 rounded-2xl">
+      <div className="relative w-full max-w-xl mt-8 justify-self-end bg-neutral-900 rounded-2xl">
         <Input
           placeholder="What do you do?"
           className="w-full py-6 pl-4 pr-10 align-middle border-none placeholder:text-neutral-500"
