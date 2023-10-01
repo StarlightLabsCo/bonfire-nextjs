@@ -62,7 +62,6 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
               }
 
               process(inputs, outputs) {
-                  console.log('process');
                   const output = outputs[0];
                   const outputChannel = output[0];
                   outputChannel.set(this.ringBuffer.pull(outputChannel.length));
@@ -102,7 +101,6 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     if (!bufferedPlayerNode) return;
 
     function handleMessage(event: MessageEvent) {
-      console.log('Message from server:', event.data);
       const data = JSON.parse(event.data);
 
       if (data.type === 'instance-created') {
