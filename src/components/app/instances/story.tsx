@@ -3,8 +3,8 @@
 import { Input } from '@/components/ui/input';
 import { PaperPlaneIcon } from '@radix-ui/react-icons';
 import { useContext, useEffect, useState, useRef } from 'react';
-import { MessagesContext } from '../../messages-context';
-import { WebSocketContext } from '../../ws-context';
+import { MessagesContext } from '@/components/app/messages-context';
+import { WebSocketContext } from '@/components/app/ws-context';
 import { Message } from '@prisma/client';
 import { IBM_Plex_Serif } from '@next/font/google';
 
@@ -23,7 +23,7 @@ export function Story({
   const [input, setInput] = useState('');
   const containerBottomRef = useRef<HTMLDivElement>(null);
 
-  const socket = useContext(WebSocketContext);
+  const { sendJSON } = useContext(WebSocketContext);
   const { messages, setMessages } = useContext(MessagesContext);
 
   if (messages.length === 0) {
@@ -31,20 +31,13 @@ export function Story({
   }
 
   const submit = () => {
-    if (!socket) {
-      console.log('socket not connected');
-      return;
-    }
-
-    socket.send(
-      JSON.stringify({
-        type: 'add-player-message',
-        payload: {
-          instanceId,
-          content: input,
-        },
-      }),
-    );
+    sendJSON({
+      type: 'add-player-message',
+      payload: {
+        instanceId,
+        content: input,
+      },
+    });
 
     setMessages([...messages, { role: 'user', content: input }]);
 

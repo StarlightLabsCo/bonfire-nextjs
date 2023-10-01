@@ -4,8 +4,17 @@ import { createContext, useEffect, useState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/navigation';
 import { RingBuffer } from '@/lib/audio';
+import { JsonObject } from 'next-auth/adapters';
 
-export const WebSocketContext = createContext<WebSocket | null>(null);
+interface WebSocketContextType {
+  socket: WebSocket | null;
+  sendJSON: (data: JsonObject) => void;
+}
+
+export const WebSocketContext = createContext<WebSocketContextType>({
+  socket: null,
+  sendJSON: () => {},
+});
 
 function base64ToUint8Array(base64: string) {
   const binary_string = atob(base64);
@@ -44,6 +53,14 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [bufferedPlayerNode, setBufferedPlayerNode] =
     useState<AudioWorkletNode | null>(null);
+
+  const sendJSON = (data: JsonObject) => {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      socket.send(JSON.stringify(data));
+    } else {
+      console.error('WebSocket is not open. Unable to send data.');
+    }
+  };
 
   async function setupAudioModule() {
     const processorCode = `
@@ -156,7 +173,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   }, [bufferedPlayerNode]);
 
   return (
-    <WebSocketContext.Provider value={socket}>
+    <WebSocketContext.Provider value={{ socket, sendJSON }}>
       {children}
     </WebSocketContext.Provider>
   );

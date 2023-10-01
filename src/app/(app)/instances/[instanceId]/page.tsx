@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getCurrentUser } from '@/lib/session';
 import db from '@/lib/db';
-import { Story } from './story';
+import { Story } from '@/components/app/instances/story';
 
 export default async function Instance({
   params,

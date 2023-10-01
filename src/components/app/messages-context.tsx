@@ -17,7 +17,7 @@ export const MessagesContext = createContext<MessagesContextValue>({
 });
 
 export function MessagesProvider({ children }: { children: React.ReactNode }) {
-  const socket = useContext(WebSocketContext);
+  const { socket } = useContext(WebSocketContext);
   const [messages, setMessages] = useState<MessageLike[]>([]);
 
   useEffect(() => {

@@ -27,38 +27,23 @@ export function Lobby({
   const [description, setDescription] = useState('');
   const [collapsed, setCollapsed] = useState(false);
 
-  // TODO: Move socket to a separate hook
-  const socket = useContext(WebSocketContext);
+  const { sendJSON } = useContext(WebSocketContext);
 
   const createWelcome = () => {
-    if (!socket) {
-      console.log('socket not connected');
-      return;
-    }
-
-    socket.send(
-      JSON.stringify({
-        type: 'welcome',
-        payload: {},
-      }),
-    );
+    sendJSON({
+      type: 'welcome',
+      payload: {},
+    });
   };
 
   const createInstance = (description: string) => {
-    if (!socket) {
-      console.log('socket not connected');
-      return;
-    }
-
-    socket.send(
-      JSON.stringify({
-        type: 'create-instance',
-        payload: {
-          userId: user.id,
-          description: description,
-        },
-      }),
-    );
+    sendJSON({
+      type: 'create-instance',
+      payload: {
+        userId: user.id,
+        description: description,
+      },
+    });
   };
 
   const submit = () => {

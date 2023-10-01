@@ -1,9 +1,9 @@
 import { redirect } from 'next/navigation';
 import { getCurrentUser } from '@/lib/session';
 import { Toaster } from '@/components/ui/toaster';
-import { WebSocketProvider } from './ws-context';
-import { MessagesProvider } from './messages-context';
-import { Navbar } from './navbar';
+import { WebSocketProvider } from '@/components/app/ws-context';
+import { MessagesProvider } from '@/components/app/messages-context';
+import { Navbar } from '@/components/app/navbar';
 
 export default async function AppLayout({
   children,

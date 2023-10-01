@@ -3,7 +3,7 @@ import { WebSocketContext } from './ws-context';
 import { cn } from '@/lib/utils';
 
 export function WebSocketStatusIndicator() {
-  const socket = useContext(WebSocketContext);
+  const { socket } = useContext(WebSocketContext);
   const [status, setStatus] = useState('CLOSED');
 
   const onOpen = () => {
