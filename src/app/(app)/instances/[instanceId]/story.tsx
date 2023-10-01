@@ -2,7 +2,7 @@
 
 import { Input } from '@/components/ui/input';
 import { PaperPlaneIcon } from '@radix-ui/react-icons';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState, useRef } from 'react';
 import { MessagesContext } from '../../messages-context';
 import { WebSocketContext } from '../../ws-context';
 import { Message } from '@prisma/client';
@@ -21,6 +21,7 @@ export function Story({
   dbMessages: Message[];
 }) {
   const [input, setInput] = useState('');
+  const containerBottomRef = useRef<HTMLDivElement>(null);
 
   const socket = useContext(WebSocketContext);
   const { messages, setMessages } = useContext(MessagesContext);
@@ -50,10 +51,20 @@ export function Story({
     setInput('');
   };
 
+  useEffect(() => {
+    if (containerBottomRef.current) {
+      containerBottomRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'end',
+        inline: 'nearest',
+      });
+    }
+  }, [messages]);
+
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full px-16">
+    <div className="flex flex-col items-center justify-center w-full h-full px-16 py-8">
       <div
-        className={`flex flex-col items-center w-full h-full max-h-80 gap-y-8 ${cormorantGaramond.className} leading-8 font-[400] text-lg overflow-y-auto`}
+        className={`${cormorantGaramond.className} flex flex-col items-center w-full h-full gap-y-8 leading-8 font-[400] text-lg overflow-y-auto`}
       >
         {messages.map((message, index: number) =>
           message.role === 'user' ? (
@@ -69,11 +80,12 @@ export function Story({
             </div>
           ),
         )}
+        <div ref={containerBottomRef} />
       </div>
-      <div className="relative w-full mt-8 justify-self-end bg-neutral-900 rounded-2xl">
+      <div className="relative w-full mt-8">
         <Input
           placeholder="What do you do?"
-          className="w-full py-6 pl-4 pr-10 align-middle border-none placeholder:text-neutral-500"
+          className="w-full py-6 pl-4 pr-10 align-middle border-none placeholder:text-neutral-500 bg-neutral-900 rounded-2xl"
           value={input}
           onChange={(event) => setInput(event.target.value)}
           onKeyDown={(event) => {

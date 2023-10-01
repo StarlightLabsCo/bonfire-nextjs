@@ -3,6 +3,27 @@
 @tailwind utilities;
 
 @layer base {
+  /* ===== Scrollbar CSS ===== */
+  * {
+    scrollbar-width: auto;
+    scrollbar-color: #525252;
+  }
+
+  /* Chrome, Edge, and Safari */
+  *::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: #525252;
+    border-radius: 100px;
+    border: none;
+  }
+
   :root {
     --background: @apply bg-neutral-950;
     --foreground: 222.2 84% 4.9%;
