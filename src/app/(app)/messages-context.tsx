@@ -24,9 +24,42 @@ export function MessagesProvider({ children }: { children: React.ReactNode }) {
     if (socket) {
       socket.addEventListener('message', (event) => {
         const data = JSON.parse(event.data);
+        console.log(data);
 
-        if (data.type === 'message-append') {
-          setMessages((messages) => [...messages, data.payload]);
+        if (data.type === 'message-add') {
+          setMessages((messages) => [
+            ...messages,
+            {
+              role: 'assistant',
+              content: '',
+            } as MessageLike,
+          ]);
+        } else if (data.type === 'message-update') {
+          setMessages((messages) => {
+            const lastMessage = messages[messages.length - 1];
+
+            if (lastMessage.role === 'assistant') {
+              return [
+                ...messages.slice(0, messages.length - 1),
+                { ...lastMessage, content: lastMessage.content + data.payload },
+              ];
+            } else {
+              return messages;
+            }
+          });
+        } else if (data.type === 'message-set') {
+          setMessages((messages) => {
+            const lastMessage = messages[messages.length - 1];
+
+            if (lastMessage.role === 'assistant') {
+              return [
+                ...messages.slice(0, messages.length - 1),
+                { ...lastMessage, content: data.payload },
+              ];
+            } else {
+              return messages;
+            }
+          });
         }
       });
     }
