@@ -6,7 +6,7 @@ import { useContext, useEffect, useState, useRef } from 'react';
 import { MessagesContext } from '@/components/app/messages-context';
 import { WebSocketContext } from '@/components/app/ws-context';
 import { Message } from '@prisma/client';
-import { IBM_Plex_Serif } from '@next/font/google';
+import { IBM_Plex_Serif } from 'next/font/google';
 
 export const cormorantGaramond = IBM_Plex_Serif({
   subsets: ['latin'],

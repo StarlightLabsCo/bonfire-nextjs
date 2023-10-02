@@ -15,6 +15,8 @@ export const WebSocketContext = createContext<WebSocketContextType>({
   sendJSON: () => {},
 });
 
+let exponentialBackoff = 1000;
+
 export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   const [socket, setSocket] = useState<WebSocket | null>(null);
 
@@ -43,22 +45,63 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => {
-    let ws = new WebSocket('ws://localhost:3001');
-    setSocket(ws);
+    async function connect() {
+      if (!process.env.NEXT_PUBLIC_BACKEND_URL) {
+        throw new Error(
+          'NEXT_PUBLIC_BACKEND_URL environment variable is not set.',
+        );
+      }
 
-    ws.addEventListener('message', handleMessage);
+      let ws = new WebSocket(`ws://${process.env.NEXT_PUBLIC_BACKEND_URL}`);
 
-    ws.addEventListener('close', () => {
-      setSocket(null);
-      setTimeout(() => {
-        ws = new WebSocket('ws://localhost:3001');
-        setSocket(ws);
-      }, 1000);
-    });
+      setSocket(ws);
 
-    return () => {
-      ws.close();
-    };
+      ws.addEventListener('message', handleMessage);
+
+      ws.addEventListener('open', () => {
+        console.log('WebSocket connection established.');
+        exponentialBackoff = 1000;
+
+        async function sendAuthToken() {
+          let token = await fetch('/api/websocket/', {
+            method: 'POST',
+          }).then((res) => res.json());
+
+          if (!token) {
+            ws.close();
+            throw new Error('Unable to fetch WebSocket Auth token.');
+          }
+
+          ws.send(
+            JSON.stringify({
+              type: 'auth',
+              payload: token,
+            }),
+          );
+        }
+
+        sendAuthToken();
+      });
+
+      ws.addEventListener('error', (error) => {
+        console.error('WebSocket error:', error);
+      });
+
+      ws.addEventListener('close', () => {
+        setSocket(null);
+        setTimeout(() => {
+          exponentialBackoff *= 2;
+          console.log('WebSocket connection closed. Reconnecting...');
+          connect();
+        }, exponentialBackoff);
+      });
+
+      return () => {
+        ws.close();
+      };
+    }
+
+    connect();
   }, []);
 
   return (
