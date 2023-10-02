@@ -30,19 +30,14 @@ async function setupAudioModule() {
   const processorCode = `
           // Incorporate RingBuffer inside the AudioWorkletProcessor
           class RingBuffer {
-            buffer: Float32Array;
-            writePointer: number;
-            readPointer: number;
-            availableData: number;
-
-            constructor(length: number) {
+            constructor(length) {
               this.buffer = new Float32Array(length);
               this.writePointer = 0;
               this.readPointer = 0;
               this.availableData = 0;
             }
 
-            push(data: Float32Array) {
+            push(data) {
               for (let i = 0; i < data.length; i++) {
                 let sample = data[i];
                 if (this.availableData >= this.buffer.length) return; // Buffer full
@@ -52,7 +47,7 @@ async function setupAudioModule() {
               }
             }
 
-            pull(amount: number) {
+            pull(amount) {
               let output = new Float32Array(amount);
               for (let i = 0; i < amount; i++) {
                 if (this.availableData <= 0) {
