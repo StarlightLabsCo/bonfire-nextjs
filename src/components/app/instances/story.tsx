@@ -59,20 +59,35 @@ export function Story({
       <div
         className={`${cormorantGaramond.className} flex flex-col items-center w-full h-full gap-y-8 leading-8 font-[400] text-lg overflow-y-auto`}
       >
-        {messages.map((message, index: number) =>
-          message.role === 'user' ? (
-            <div
-              key={index}
-              className="w-full pl-6 border-l-2 border-neutral-700"
-            >
-              <p className="text-neutral-500">{message.content}</p>
-            </div>
-          ) : (
-            <div key={index} className="w-full">
-              <p>{message.content}</p>
-            </div>
-          ),
-        )}
+        {messages.map((message, index: number) => {
+          const messageTypes: Record<
+            'user' | 'assistant' | 'function',
+            JSX.Element
+          > = {
+            user: (
+              <div
+                key={index}
+                className="w-full pl-6 border-l-2 border-neutral-700"
+              >
+                <p className="text-neutral-500">{message.content}</p>
+              </div>
+            ),
+            assistant: (
+              <div key={index} className="w-full">
+                <p>{message.content}</p>
+              </div>
+            ),
+            function: (
+              <div key={index} className="w-full">
+                <img src={message.content} />
+              </div>
+            ),
+          };
+
+          return messageTypes[
+            message.role as 'user' | 'assistant' | 'function'
+          ];
+        })}
         <div ref={containerBottomRef} />
       </div>
       <div className="relative w-full mt-8">
