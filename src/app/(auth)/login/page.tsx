@@ -17,7 +17,7 @@ export default function Login() {
             Welcome back
           </h1>
           <p className="text-sm text-muted-foreground">
-            Simulations are one step closer
+            Limitless adventure is one step closer
           </p>
         </div>
         <UserAuthForm />
