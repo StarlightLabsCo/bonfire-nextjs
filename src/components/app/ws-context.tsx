@@ -52,7 +52,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
         );
       }
 
-      let ws = new WebSocket(`ws://${process.env.NEXT_PUBLIC_BACKEND_URL}`);
+      let ws = new WebSocket(`wss://${process.env.NEXT_PUBLIC_BACKEND_URL}`);
 
       setSocket(ws);
 
