@@ -1,6 +1,6 @@
 'use client';
 
-import { pushBase64Audio, setupAudioModule } from '@/lib/audio';
+import { AudioRecorder, pushBase64Audio, setupAudioModule } from '@/lib/audio';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { WebSocketContext } from './ws-context';
 
@@ -24,12 +24,25 @@ export function AudioContextProvider({
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [bufferedPlayerNode, setBufferedPlayerNode] =
     useState<AudioWorkletNode | null>(null);
+  const [audioRecorder, setAudioRecorder] = useState<AudioRecorder | null>(
+    null,
+  );
 
   useEffect(() => {
     async function setupAudio() {
+      // ---- Streaming Playback ----
       const { audioContext, bufferedPlayerNode } = await setupAudioModule();
+
       setAudioContext(audioContext);
       setBufferedPlayerNode(bufferedPlayerNode);
+
+      // ---- Recording ----
+      const audioRecorder = new AudioRecorder();
+      setAudioRecorder(audioRecorder);
+
+      return () => {
+        audioContext.close();
+      };
     }
     setupAudio();
   }, []);

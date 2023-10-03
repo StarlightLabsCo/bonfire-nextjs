@@ -130,9 +130,50 @@ function pushBase64Audio(
   bufferedPlayerNode.port.postMessage({ push: audioFloat32Array });
 }
 
+class AudioRecorder {
+  private mediaStream: MediaStream | null = null;
+  private mediaRecorder: MediaRecorder | null = null;
+  private audioChunks: Blob[] = [];
+
+  async startRecording(): Promise<void> {
+    try {
+      this.mediaStream = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+      });
+
+      // Start recording
+      this.mediaRecorder = new MediaRecorder(this.mediaStream, {
+        mimeType: 'audio/wav',
+      });
+      this.mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          this.audioChunks.push(event.data);
+
+          // TODO: send audio to server
+        }
+      };
+      this.mediaRecorder.start();
+    } catch (err) {
+      console.error('Error accessing microphone:', err);
+    }
+  }
+
+  stopRecording() {
+    if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
+      this.mediaRecorder.stop();
+    }
+  }
+}
+
+// Use event listeners or similar to start and stop recording, e.g.:
+// const audioRecorder = new AudioRecorder();
+// someButton.addEventListener('click', () => audioRecorder.startRecording());
+// someStopButton.addEventListener('click', () => audioRecorder.stopRecording());
+
 export {
   base64ToUint8Array,
   uint8ArrayToFloat32Array,
   setupAudioModule,
   pushBase64Audio,
+  AudioRecorder,
 };
