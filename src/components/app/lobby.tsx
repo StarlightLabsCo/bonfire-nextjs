@@ -4,6 +4,7 @@ import { useContext, useEffect, useState } from 'react';
 import { WebSocketContext } from './ws-context';
 import { User } from 'next-auth';
 import { Input } from '@/components/input';
+import { MessagesContext } from './messages-context';
 
 const images = [
   'https://cdn.midjourney.com/9ed73ce9-cea2-46f3-b846-f5a7dc7d56ce/0_0_384_N.webp',
@@ -25,6 +26,7 @@ export function Lobby({
   const [description, setDescription] = useState('');
 
   const { sendJSON } = useContext(WebSocketContext);
+  const { setMessages } = useContext(MessagesContext);
 
   const createWelcome = () => {
     sendJSON({
@@ -47,6 +49,10 @@ export function Lobby({
     createWelcome();
     createInstance(description);
   };
+
+  useEffect(() => {
+    setMessages([]);
+  }, []);
 
   useEffect(() => {
     const cycleImage = () => {

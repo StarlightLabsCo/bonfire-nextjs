@@ -78,7 +78,10 @@ export function Story({
             ),
             function: (
               <div key={index} className="w-full">
-                <img src={message.content} />
+                <img
+                  src={message.content}
+                  className="rounded-2xl fade-in-image"
+                />
               </div>
             ),
           };
