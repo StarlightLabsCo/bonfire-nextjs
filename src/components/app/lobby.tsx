@@ -3,9 +3,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { WebSocketContext } from './ws-context';
 import { User } from 'next-auth';
-import { PaperPlaneIcon } from '@radix-ui/react-icons';
-import { Input } from '@/components/ui/input';
-import { cn } from '@/lib/utils';
+import { Input } from '@/components/input';
 
 const images = [
   'https://cdn.midjourney.com/9ed73ce9-cea2-46f3-b846-f5a7dc7d56ce/0_0_384_N.webp',
@@ -25,7 +23,6 @@ export function Lobby({
   const [animated, setAnimated] = useState(false);
 
   const [description, setDescription] = useState('');
-  const [collapsed, setCollapsed] = useState(false);
 
   const { sendJSON } = useContext(WebSocketContext);
 
@@ -49,7 +46,6 @@ export function Lobby({
   const submit = () => {
     createWelcome();
     createInstance(description);
-    setCollapsed(true);
   };
 
   useEffect(() => {
@@ -97,30 +93,12 @@ export function Lobby({
           />
         </div>
       </div>
-      <div
-        className={cn(
-          `relative w-full max-w-xl mt-8`,
-          collapsed ? 'collapse-input' : '',
-        )}
-      >
-        <Input
-          placeholder="Describe an adventure or leave it blank for a surprise"
-          className="w-full py-6 pl-4 pr-10 align-middle border-none placeholder:text-neutral-500 rounded-2xl bg-neutral-900"
-          value={description}
-          onChange={(event) => setDescription(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter') {
-              submit();
-            }
-          }}
-        />
-        <PaperPlaneIcon
-          className="absolute w-4 h-4 translate-y-1/2 cursor-pointer text-neutral-500 right-4 bottom-1/2"
-          onClick={() => {
-            submit();
-          }}
-        />
-      </div>
+      <Input
+        value={description}
+        setValue={setDescription}
+        submit={submit}
+        placeholder="Describe your adventure..."
+      />
     </div>
   );
 }

@@ -1,12 +1,11 @@
 'use client';
 
-import { Input } from '@/components/ui/input';
-import { PaperPlaneIcon } from '@radix-ui/react-icons';
 import { useContext, useEffect, useState, useRef } from 'react';
 import { MessagesContext } from '@/components/app/messages-context';
 import { WebSocketContext } from '@/components/app/ws-context';
 import { Message } from '@prisma/client';
 import { IBM_Plex_Serif } from 'next/font/google';
+import { Input } from '@/components/input';
 
 export const cormorantGaramond = IBM_Plex_Serif({
   subsets: ['latin'],
@@ -90,25 +89,12 @@ export function Story({
         })}
         <div ref={containerBottomRef} />
       </div>
-      <div className="relative w-full mt-8">
-        <Input
-          placeholder="What do you do?"
-          className="w-full py-6 pl-4 pr-10 align-middle border-none placeholder:text-neutral-500 bg-neutral-900 rounded-2xl"
-          value={input}
-          onChange={(event) => setInput(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === 'Enter') {
-              submit();
-            }
-          }}
-        />
-        <PaperPlaneIcon
-          className="absolute w-4 h-4 translate-y-1/2 cursor-pointer text-neutral-500 right-4 bottom-1/2"
-          onClick={() => {
-            submit();
-          }}
-        />
-      </div>
+      <Input
+        placeholder="What do you do?"
+        value={input}
+        setValue={setInput}
+        submit={submit}
+      />
     </div>
   );
 }

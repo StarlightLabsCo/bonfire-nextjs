@@ -1,17 +1,28 @@
 'use client';
 
-import { AudioRecorder, pushBase64Audio, setupAudioModule } from '@/lib/audio';
+import {
+  AudioRecorder,
+  arrayBufferToBase64,
+  bufferBase64Audio,
+  setupAudio,
+} from '@/lib/audio';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { WebSocketContext } from './ws-context';
 
 interface AudioProcessorContextType {
   audioContext: AudioContext | null;
   bufferedPlayerNode: AudioWorkletNode | null;
+  audioRecorder: AudioRecorder | null;
+  transcription: string;
+  setTranscription: (transcription: string) => void;
 }
 
 export const AudioProcessorContext = createContext<AudioProcessorContextType>({
   audioContext: null,
   bufferedPlayerNode: null,
+  audioRecorder: null,
+  transcription: '',
+  setTranscription: () => {},
 });
 
 export function AudioContextProvider({
@@ -22,30 +33,51 @@ export function AudioContextProvider({
   const { socket } = useContext(WebSocketContext);
 
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
+
   const [bufferedPlayerNode, setBufferedPlayerNode] =
     useState<AudioWorkletNode | null>(null);
+
   const [audioRecorder, setAudioRecorder] = useState<AudioRecorder | null>(
     null,
   );
 
+  const [transcription, setTranscription] = useState<string>('');
+
   useEffect(() => {
-    async function setupAudio() {
+    async function setup() {
       // ---- Streaming Playback ----
-      const { audioContext, bufferedPlayerNode } = await setupAudioModule();
+      const { audioContext, bufferedPlayerNode } = await setupAudio();
 
       setAudioContext(audioContext);
       setBufferedPlayerNode(bufferedPlayerNode);
 
       // ---- Recording ----
-      const audioRecorder = new AudioRecorder();
+      const audioRecorder = new AudioRecorder(audioContext);
       setAudioRecorder(audioRecorder);
 
       return () => {
         audioContext.close();
       };
     }
-    setupAudio();
+    setup();
   }, []);
+
+  useEffect(() => {
+    if (!socket) return;
+    if (!audioRecorder) return;
+
+    audioRecorder.onmessage = (event) => {
+      if (event.data) {
+        const rawAudio = event.data as Int16Array;
+        const base64Audio = arrayBufferToBase64(rawAudio.buffer);
+
+        socket.send(JSON.stringify({ type: 'voice', payload: base64Audio }));
+      } else if (event.type === 'end') {
+        console.log('end');
+        socket.send(JSON.stringify({ type: 'voice-end' }));
+      }
+    };
+  }, [audioRecorder, socket]);
 
   useEffect(() => {
     if (!bufferedPlayerNode || !socket) return;
@@ -53,8 +85,13 @@ export function AudioContextProvider({
     function handleMessage(event: MessageEvent) {
       const data = JSON.parse(event.data);
 
-      if (data.audio) {
-        pushBase64Audio(audioContext, bufferedPlayerNode, data.audio);
+      console.log(data);
+
+      if (data.type === 'audio') {
+        bufferBase64Audio(audioContext, bufferedPlayerNode, data.payload.audio);
+      } else if (data.type === 'transcription') {
+        setTranscription(data.payload);
+        console.log(data.payload);
       }
     }
 
@@ -67,7 +104,13 @@ export function AudioContextProvider({
 
   return (
     <AudioProcessorContext.Provider
-      value={{ audioContext, bufferedPlayerNode }}
+      value={{
+        audioContext,
+        bufferedPlayerNode,
+        audioRecorder,
+        transcription,
+        setTranscription,
+      }}
     >
       {children}
     </AudioProcessorContext.Provider>

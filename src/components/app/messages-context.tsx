@@ -24,7 +24,6 @@ export function MessagesProvider({ children }: { children: React.ReactNode }) {
     if (socket) {
       socket.addEventListener('message', (event) => {
         const data = JSON.parse(event.data);
-        console.log(data);
 
         if (data.type === 'message-add') {
           setMessages((messages) => [

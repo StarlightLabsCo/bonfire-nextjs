@@ -1,3 +1,4 @@
+// Util functions
 function base64ToUint8Array(base64: string) {
   const binary_string = atob(base64);
   const len = binary_string.length;
@@ -6,6 +7,16 @@ function base64ToUint8Array(base64: string) {
     bytes[i] = binary_string.charCodeAt(i);
   }
   return bytes;
+}
+
+function arrayBufferToBase64(buffer: ArrayBuffer) {
+  let binary = '';
+  let bytes = new Uint8Array(buffer);
+  let len = bytes.byteLength;
+  for (let i = 0; i < len; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return window.btoa(binary);
 }
 
 function uint8ArrayToFloat32Array(u8a: Uint8Array) {
@@ -26,7 +37,8 @@ function uint8ArrayToFloat32Array(u8a: Uint8Array) {
   return f32Array;
 }
 
-async function setupAudioModule() {
+// Audio module setup
+function setupBufferedPlayerProcessor() {
   const processorCode = `
           // Incorporate RingBuffer inside the AudioWorkletProcessor
           class RingBuffer {
@@ -89,25 +101,10 @@ async function setupAudioModule() {
   });
   const blobURL = URL.createObjectURL(blob);
 
-  const audioContext = new AudioContext({
-    sampleRate: 44100,
-    latencyHint: 'interactive',
-  });
-  await audioContext.audioWorklet.addModule(blobURL);
-
-  const bufferedPlayerNode = new AudioWorkletNode(
-    audioContext,
-    'buffered-player-processor',
-  );
-  bufferedPlayerNode.connect(audioContext.destination);
-
-  return {
-    audioContext,
-    bufferedPlayerNode,
-  };
+  return blobURL;
 }
 
-function pushBase64Audio(
+function bufferBase64Audio(
   audioContext: AudioContext | null,
   bufferedPlayerNode: AudioWorkletNode | null,
   audioBase64: string,
@@ -130,50 +127,161 @@ function pushBase64Audio(
   bufferedPlayerNode.port.postMessage({ push: audioFloat32Array });
 }
 
-class AudioRecorder {
-  private mediaStream: MediaStream | null = null;
-  private mediaRecorder: MediaRecorder | null = null;
-  private audioChunks: Blob[] = [];
+// Audio recorder - recording audio from microphone, streamed to server
+function setupAudioInputProcessor() {
+  const processorCode = `
+          class AudioInputProcessor extends AudioWorkletProcessor {
+            constructor() {
+                  super();
+                  this.port.onmessage = event => {
+                      if (event.data.recording !== undefined) {
+                          console.log('Setting recording to', event.data.recording);
+                          this.recording = event.data.recording;
+                      }
+                  };
+              }
 
-  async startRecording(): Promise<void> {
+            process(inputs, outputs) {
+              if (!this.recording) {
+                return true;
+              }
+
+              const input = inputs[0];
+              const leftChannel = input[0]
+
+              const pcmOutput = new Int16Array(leftChannel.length);
+              for (let i = 0; i < leftChannel.length; i++) {
+                pcmOutput[i] = Math.max(-1, Math.min(1, leftChannel[i])) * 0x7FFF;
+              }
+
+              this.port.postMessage(pcmOutput);
+
+              return true;
+            }
+          }
+
+          registerProcessor('audio-input-processor', AudioInputProcessor);
+          `;
+
+  const blob = new Blob([processorCode], {
+    type: 'application/javascript',
+  });
+  const blobURL = URL.createObjectURL(blob);
+
+  return blobURL;
+}
+
+class AudioRecorder {
+  private audioContext: AudioContext;
+  private mediaStream: MediaStream | null = null;
+  private mediaStreamSource: MediaStreamAudioSourceNode | null = null;
+  private audioInputProcessorNode: AudioWorkletNode | null = null;
+  private initialized = false;
+  private audioBuffer = new Int16Array(0);
+
+  public recording = false;
+  public onmessage: (event: MessageEvent) => void = () => {};
+
+  constructor(audioContext: AudioContext) {
+    this.audioContext = audioContext;
+  }
+
+  async init(): Promise<void> {
     try {
+      console.log('Requesting microphone access...');
+
       this.mediaStream = await navigator.mediaDevices.getUserMedia({
         audio: true,
       });
-
-      // Start recording
-      this.mediaRecorder = new MediaRecorder(this.mediaStream, {
-        mimeType: 'audio/wav',
-      });
-      this.mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          this.audioChunks.push(event.data);
-
-          // TODO: send audio to server
-        }
-      };
-      this.mediaRecorder.start();
     } catch (err) {
       console.error('Error accessing microphone:', err);
+      return;
     }
+
+    this.mediaStreamSource = this.audioContext.createMediaStreamSource(
+      this.mediaStream,
+    );
+
+    const blobURL = setupAudioInputProcessor();
+    await this.audioContext.audioWorklet.addModule(blobURL);
+
+    this.audioInputProcessorNode = new AudioWorkletNode(
+      this.audioContext,
+      'audio-input-processor',
+    );
+
+    this.audioInputProcessorNode.port.onmessage = (event) => {
+      const incomingData = event.data;
+
+      const newBuffer = new Int16Array(
+        this.audioBuffer.length + incomingData.length,
+      );
+      newBuffer.set(this.audioBuffer);
+      newBuffer.set(incomingData, this.audioBuffer.length);
+
+      this.audioBuffer = newBuffer;
+
+      if (this.audioBuffer.length >= 44100 / 10) {
+        const event = new MessageEvent('data', { data: this.audioBuffer });
+        this.onmessage(event);
+        this.audioBuffer = new Int16Array(0);
+      }
+    };
+
+    this.audioContext.resume();
+    this.mediaStreamSource.connect(this.audioInputProcessorNode);
+  }
+
+  async startRecording() {
+    if (this.recording) return;
+
+    if (this.initialized === false) {
+      await this.init();
+      this.initialized = true;
+    }
+
+    this.recording = true;
+    this.audioInputProcessorNode?.port.postMessage({ recording: true });
   }
 
   stopRecording() {
-    if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
-      this.mediaRecorder.stop();
-    }
+    if (!this.recording) return;
+
+    this.recording = false;
+    this.audioInputProcessorNode?.port.postMessage({ recording: false });
+
+    this.onmessage(new MessageEvent('end'));
   }
 }
 
-// Use event listeners or similar to start and stop recording, e.g.:
-// const audioRecorder = new AudioRecorder();
-// someButton.addEventListener('click', () => audioRecorder.startRecording());
-// someStopButton.addEventListener('click', () => audioRecorder.stopRecording());
+// Main setup function
+async function setupAudio() {
+  const audioContext = new AudioContext({
+    sampleRate: 44100,
+    latencyHint: 'interactive',
+  });
+
+  // Setup AudioWorklet for buffered streaming playback
+  const blobURL = setupBufferedPlayerProcessor();
+  await audioContext.audioWorklet.addModule(blobURL);
+
+  const bufferedPlayerNode = new AudioWorkletNode(
+    audioContext,
+    'buffered-player-processor',
+  );
+  bufferedPlayerNode.connect(audioContext.destination);
+
+  return {
+    audioContext,
+    bufferedPlayerNode,
+  };
+}
 
 export {
   base64ToUint8Array,
+  arrayBufferToBase64,
   uint8ArrayToFloat32Array,
-  setupAudioModule,
-  pushBase64Audio,
+  setupAudio,
+  bufferBase64Audio,
   AudioRecorder,
 };
