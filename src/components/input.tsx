@@ -68,7 +68,7 @@ const Input: FC<InputProps> = ({
 
   return (
     <div className={`relative w-full max-w-xl mt-8`}>
-      <FrequencyVisualizer data={frequencyData} />
+      {recording && <FrequencyVisualizer data={frequencyData} />}
       <div>
         <input
           placeholder={placeholder}
