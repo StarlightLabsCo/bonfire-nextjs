@@ -173,11 +173,16 @@ function setupAudioInputProcessor() {
 
 class AudioRecorder {
   private audioContext: AudioContext;
+
   private mediaStream: MediaStream | null = null;
   private mediaStreamSource: MediaStreamAudioSourceNode | null = null;
+
+  private analyser: AnalyserNode | null = null;
+
   private audioInputProcessorNode: AudioWorkletNode | null = null;
-  private initialized = false;
   private audioBuffer = new Int16Array(0);
+
+  private initialized = false;
 
   public recording = false;
   public onmessage: (event: MessageEvent) => void = () => {};
@@ -187,6 +192,7 @@ class AudioRecorder {
   }
 
   async init(): Promise<void> {
+    // Create AudioInput Node
     try {
       console.log('Requesting microphone access...');
 
@@ -202,6 +208,13 @@ class AudioRecorder {
       this.mediaStream,
     );
 
+    // Create input visualizer node
+    this.analyser = this.audioContext.createAnalyser();
+    this.analyser.fftSize = 32;
+
+    this.mediaStreamSource.connect(this.analyser);
+
+    // Create stream processor node (that accumulates and sends data to server)
     const blobURL = setupAudioInputProcessor();
     await this.audioContext.audioWorklet.addModule(blobURL);
 
@@ -229,7 +242,26 @@ class AudioRecorder {
     };
 
     this.audioContext.resume();
-    this.mediaStreamSource.connect(this.audioInputProcessorNode);
+    this.analyser.connect(this.audioInputProcessorNode);
+  }
+
+  getFrequencyData() {
+    if (this.analyser === null) return new Uint8Array(0);
+
+    let dataArray = new Uint8Array(this.analyser.frequencyBinCount);
+    this.analyser.getByteFrequencyData(dataArray);
+
+    // Group the bins into 4 logarithmically spaced groups and average each group
+    let averagedData = new Uint8Array(4);
+    for (let i = 0; i < 4; i++) {
+      const start = Math.floor(dataArray.length * (Math.pow(2, i - 1) / 15));
+      const end = Math.floor(dataArray.length * (Math.pow(2, i) / 15));
+      const bins = dataArray.slice(start, end);
+      const average = bins.reduce((a, b) => a + b) / bins.length;
+      averagedData[i] = average;
+    }
+
+    return averagedData;
   }
 
   async startRecording() {
