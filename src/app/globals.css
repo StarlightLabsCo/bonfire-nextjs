@@ -95,6 +95,17 @@
 }
 
 @layer components {
+  .fade-out-input {
+    opacity: 1; /* Start with full opacity */
+    animation: fadeOut 1s ease-in-out forwards;
+  }
+
+  @keyframes fadeOut {
+    to {
+      opacity: 0; /* End with no opacity */
+    }
+  }
+
   .fade-in-image {
     opacity: 0;
     animation: fadeIn 2s ease-in-out forwards;

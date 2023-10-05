@@ -21,10 +21,10 @@ export default async function AppLayout({
     <WebSocketProvider>
       <AudioContextProvider>
         <MessagesProvider>
-          <div className="h-screen max-h-screen bg-neutral-950">
-            <div className="flex flex-col h-full max-w-5xl mx-auto">
+          <div className="h-screen bg-neutral-950">
+            <div className="h-full flex flex-col max-w-5xl mx-auto">
               <Navbar user={user} />
-              {children}
+              <div className="h-[calc(100%-3rem)]">{children}</div>
             </div>
             <Toaster />
           </div>

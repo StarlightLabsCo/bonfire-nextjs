@@ -5,6 +5,7 @@ import { WebSocketContext } from './ws-context';
 import { User } from 'next-auth';
 import { Input } from '@/components/input';
 import { MessagesContext } from './messages-context';
+import { cn } from '@/lib/utils';
 
 const images = [
   'https://cdn.midjourney.com/9ed73ce9-cea2-46f3-b846-f5a7dc7d56ce/0_0_384_N.webp',
@@ -22,13 +23,14 @@ export function Lobby({
   const [imageIndex, setImageIndex] = useState(0);
   const [imageURL, setImageURL] = useState(images[imageIndex]);
   const [animated, setAnimated] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   const [description, setDescription] = useState('');
 
   const { sendJSON } = useContext(WebSocketContext);
   const { setMessages } = useContext(MessagesContext);
 
-  const createWelcome = () => {
+  const createWelcome = (description: string) => {
     sendJSON({
       type: 'welcome',
       payload: {},
@@ -46,7 +48,8 @@ export function Lobby({
   };
 
   const submit = () => {
-    createWelcome();
+    setSubmitted(true);
+    createWelcome(description);
     createInstance(description);
   };
 
@@ -104,6 +107,8 @@ export function Lobby({
         setValue={setDescription}
         submit={submit}
         placeholder="Describe your adventure..."
+        disabled={submitted}
+        className={cn(submitted && 'cursor-not-allowed fade-out-input')}
       />
     </div>
   );

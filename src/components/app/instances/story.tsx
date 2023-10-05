@@ -67,9 +67,9 @@ export function Story({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full max-h-screen px-8 py-8 md:px-16">
+    <div className="h-full flex flex-col items-center w-full px-8 pb-2 md:px-16">
       <div
-        className={`${cormorantGaramond.className} flex flex-col items-center w-full h-4/5 overflow-y-auto gap-y-8 leading-8 font-[400] text-base md:text-lg`}
+        className={`${cormorantGaramond.className} h-[calc(100%-2.25rem)] flex flex-col items-center w-full overflow-y-auto gap-y-8 leading-8 font-[400] text-base md:text-lg`}
       >
         {messages.map((message, index: number) => {
           const isLastMessage = index === messages.length - 1;

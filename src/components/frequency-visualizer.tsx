@@ -8,27 +8,26 @@ const FrequencyVisualizer: FC<FrequencyVisualizerProps> = ({ data }) => {
   const normalizedData = Array.from(data).map((value) => value / 255);
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100%',
-      }}
-    >
+    <div className="w-full h-full flex justify-center items-center">
       {normalizedData.map((value, index) => (
         <div
           key={index}
+          className="flex flex-col justify-center items-center"
           style={{
-            width: 50,
-            height: Math.max(50, value * 100), // Adjust the multiplier to control the maximum expansion
-            borderRadius: '50%',
-            transform: `translateY(${(1 - value) * 50}px)`, // Adjust the multiplier to control the maximum vertical movement
-            backgroundColor: 'white',
+            width: '1rem',
             transition: 'height 0.1s ease-out, transform 0.1s ease-out',
-            margin: '0 10px', // Add some horizontal margin between the bubbles
+            margin: '0 0.1rem',
           }}
-        />
+        >
+          <div
+            style={{
+              height: `${value + 1}rem`,
+              width: '1rem',
+              background: 'white',
+              borderRadius: '100%',
+            }}
+          />
+        </div>
       ))}
     </div>
   );

@@ -17,6 +17,8 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   setValue: (value: string) => void;
   submit: () => void;
   placeholder?: string;
+  className?: string;
+  disabled?: boolean;
 }
 
 const Input: FC<InputProps> = ({
@@ -24,7 +26,7 @@ const Input: FC<InputProps> = ({
   setValue,
   submit,
   placeholder,
-  className: passedClassName,
+  className,
   ...props
 }) => {
   const { socket } = useContext(WebSocketContext);
@@ -45,13 +47,6 @@ const Input: FC<InputProps> = ({
     animate();
   }, [audioRecorder, recording]);
 
-  const computedClassName = cn(
-    'flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent',
-    'file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
-    'w-full py-6 pl-4 pr-10 align-middle border-none placeholder:text-neutral-500 rounded-2xl bg-neutral-900',
-    passedClassName,
-  );
-
   useEffect(() => {
     if (transcription) {
       setValue(transcription);
@@ -68,12 +63,14 @@ const Input: FC<InputProps> = ({
   }
 
   return (
-    <div className={`relative w-full mt-8`}>
-      {recording && <FrequencyVisualizer data={frequencyData} />}
-      <div>
+    <div className={cn(`flex flex-col w-full mt-8`, className)}>
+      <div className="h-9">
+        {recording && <FrequencyVisualizer data={frequencyData} />}
+      </div>
+      <div className="flex h-9 items-center bg-neutral-900 rounded-2xl px-4 py-1 disabled:cursor-not-allowed disabled:opacity-50">
         <input
           placeholder={placeholder}
-          className={computedClassName}
+          className="w-full text-sm placeholder:text-neutral-500 bg-neutral-900 focus:outline-none"
           value={value}
           onChange={(event) => setValue(event.target.value)}
           onKeyDown={(event) => {
@@ -85,7 +82,7 @@ const Input: FC<InputProps> = ({
         />
         <Icons.microphone
           className={cn(
-            'absolute w-4 h-4 translate-y-1/2 cursor-pointer text-neutral-500 right-8 bottom-1/2 mr-2',
+            'w-4 h-4 cursor-pointer text-neutral-500 mr-2',
             recording && 'animate-pulse text-red-500',
           )}
           onClick={() => {
@@ -107,9 +104,7 @@ const Input: FC<InputProps> = ({
           }}
         />
         <PaperPlaneIcon
-          className={cn(
-            'absolute w-4 h-4 translate-y-1/2 cursor-pointer text-neutral-500 right-4 bottom-1/2',
-          )}
+          className={cn('w-4 h-4 cursor-pointer text-neutral-500')}
           onClick={() => {
             submitValue();
           }}
