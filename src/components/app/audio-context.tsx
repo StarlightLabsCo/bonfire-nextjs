@@ -12,6 +12,7 @@ import { WebSocketContext } from './ws-context';
 interface AudioProcessorContextType {
   audioContext: AudioContext | null;
   bufferedPlayerNode: AudioWorkletNode | null;
+  setVolume: (volume: number) => void;
   audioRecorder: AudioRecorder | null;
   transcription: string;
   setTranscription: (transcription: string) => void;
@@ -20,6 +21,7 @@ interface AudioProcessorContextType {
 export const AudioProcessorContext = createContext<AudioProcessorContextType>({
   audioContext: null,
   bufferedPlayerNode: null,
+  setVolume: () => {},
   audioRecorder: null,
   transcription: '',
   setTranscription: () => {},
@@ -36,6 +38,7 @@ export function AudioContextProvider({
 
   const [bufferedPlayerNode, setBufferedPlayerNode] =
     useState<AudioWorkletNode | null>(null);
+  const [gainNode, setGainNode] = useState<GainNode | null>(null);
 
   const [audioRecorder, setAudioRecorder] = useState<AudioRecorder | null>(
     null,
@@ -43,13 +46,19 @@ export function AudioContextProvider({
 
   const [transcription, setTranscription] = useState<string>('');
 
+  function setVolume(volume: number) {
+    if (!gainNode) return;
+    gainNode.gain.value = Math.max(0, Math.min(1, volume));
+  }
+
   useEffect(() => {
     async function setup() {
       // ---- Streaming Playback ----
-      const { audioContext, bufferedPlayerNode } = await setupAudio();
+      const { audioContext, bufferedPlayerNode, gainNode } = await setupAudio();
 
       setAudioContext(audioContext);
       setBufferedPlayerNode(bufferedPlayerNode);
+      setGainNode(gainNode);
 
       // ---- Recording ----
       const audioRecorder = new AudioRecorder(audioContext);
@@ -107,6 +116,7 @@ export function AudioContextProvider({
       value={{
         audioContext,
         bufferedPlayerNode,
+        setVolume,
         audioRecorder,
         transcription,
         setTranscription,

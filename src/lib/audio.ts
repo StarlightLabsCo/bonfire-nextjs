@@ -301,11 +301,18 @@ async function setupAudio() {
     audioContext,
     'buffered-player-processor',
   );
-  bufferedPlayerNode.connect(audioContext.destination);
+
+  // Gain node for volume control / mute
+  const gainNode = audioContext.createGain();
+  gainNode.gain.value = 1;
+
+  bufferedPlayerNode.connect(gainNode);
+  gainNode.connect(audioContext.destination);
 
   return {
     audioContext,
     bufferedPlayerNode,
+    gainNode,
   };
 }
 
