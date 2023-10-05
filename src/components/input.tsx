@@ -11,6 +11,8 @@ import {
 import { AudioProcessorContext } from './app/audio-context';
 import { WebSocketContext } from './app/ws-context';
 import FrequencyVisualizer from './frequency-visualizer';
+import { MessagesContext } from './app/messages-context';
+import { Suggestions } from './suggestions';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   value: string;
@@ -36,6 +38,8 @@ const Input: FC<InputProps> = ({
   );
   const [recording, setRecording] = useState<boolean>(false);
   const [frequencyData, setFrequencyData] = useState(new Uint8Array(4));
+
+  const { suggestions } = useContext(MessagesContext);
 
   useEffect(() => {
     if (!audioRecorder || !recording) return;
@@ -66,6 +70,7 @@ const Input: FC<InputProps> = ({
     <div className={cn(`flex flex-col w-full mt-8`, className)}>
       <div className="h-9">
         {recording && <FrequencyVisualizer data={frequencyData} />}
+        {suggestions.length > 0 && <Suggestions />}
       </div>
       <div className="flex h-9 items-center bg-neutral-900 rounded-2xl px-4 py-1 disabled:cursor-not-allowed disabled:opacity-50">
         <input

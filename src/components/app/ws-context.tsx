@@ -8,17 +8,20 @@ import { JsonObject } from 'next-auth/adapters';
 interface WebSocketContextType {
   socket: WebSocket | null;
   sendJSON: (data: JsonObject) => void;
+  instanceId?: string | null;
 }
 
 export const WebSocketContext = createContext<WebSocketContextType>({
   socket: null,
   sendJSON: () => {},
+  instanceId: null,
 });
 
 let exponentialBackoff = 1000;
 
 export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   const [socket, setSocket] = useState<WebSocket | null>(null);
+  const [instanceId, setInstanceId] = useState<string | null>(null);
 
   const router = useRouter();
   const { toast } = useToast();
@@ -35,6 +38,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     const data = JSON.parse(event.data);
 
     if (data.type === 'instance-created') {
+      setInstanceId(data.payload.instanceId);
       router.push(`/instances/${data.payload.instanceId}`);
     } else if (data.type === 'error') {
       toast({
@@ -105,7 +109,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <WebSocketContext.Provider value={{ socket, sendJSON }}>
+    <WebSocketContext.Provider value={{ socket, sendJSON, instanceId }}>
       {children}
     </WebSocketContext.Provider>
   );
