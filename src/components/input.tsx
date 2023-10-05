@@ -46,7 +46,8 @@ const Input: FC<InputProps> = ({
   }, [audioRecorder, recording]);
 
   const computedClassName = cn(
-    'flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
+    'flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent',
+    'file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50',
     'w-full py-6 pl-4 pr-10 align-middle border-none placeholder:text-neutral-500 rounded-2xl bg-neutral-900',
     passedClassName,
   );
@@ -67,7 +68,7 @@ const Input: FC<InputProps> = ({
   }
 
   return (
-    <div className={`relative w-full max-w-xl mt-8`}>
+    <div className={`relative w-full mt-8`}>
       {recording && <FrequencyVisualizer data={frequencyData} />}
       <div>
         <input

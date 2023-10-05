@@ -3,7 +3,7 @@
 import { useContext, useEffect, useState, useRef } from 'react';
 import { MessagesContext } from '@/components/app/messages-context';
 import { WebSocketContext } from '@/components/app/ws-context';
-import { Message } from '@prisma/client';
+import { Message } from '@prisma/client'; // Assuming RoleType exists
 import { IBM_Plex_Serif } from 'next/font/google';
 import { Input } from '@/components/input';
 
@@ -20,7 +20,8 @@ export function Story({
   dbMessages: Message[];
 }) {
   const [input, setInput] = useState('');
-  const containerBottomRef = useRef<HTMLDivElement>(null);
+  const lastMessageDivRef = useRef<HTMLDivElement>(null);
+  const lastImageRef = useRef<HTMLImageElement>(null);
 
   const { sendJSON } = useContext(WebSocketContext);
   const { messages, setMessages } = useContext(MessagesContext);
@@ -44,53 +45,69 @@ export function Story({
   };
 
   useEffect(() => {
-    if (containerBottomRef.current) {
-      containerBottomRef.current.scrollIntoView({
+    if (
+      messages.length > 0 &&
+      messages[messages.length - 1].role !== 'function' &&
+      lastMessageDivRef.current
+    ) {
+      lastMessageDivRef.current.scrollIntoView({
         behavior: 'smooth',
-        block: 'end',
-        inline: 'nearest',
+        block: 'start',
       });
     }
   }, [messages]);
 
+  const handleImageLoad = () => {
+    if (lastImageRef.current) {
+      lastImageRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      });
+    }
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full px-16 py-8">
+    <div className="flex flex-col items-center justify-center w-full h-full max-h-screen px-8 py-8 md:px-16">
       <div
-        className={`${cormorantGaramond.className} flex flex-col items-center w-full h-full gap-y-8 leading-8 font-[400] text-lg overflow-y-auto`}
+        className={`${cormorantGaramond.className} flex flex-col items-center w-full h-4/5 overflow-y-auto gap-y-8 leading-8 font-[400] text-base md:text-lg`}
       >
         {messages.map((message, index: number) => {
-          const messageTypes: Record<
-            'user' | 'assistant' | 'function',
-            JSX.Element
-          > = {
-            user: (
-              <div
-                key={index}
-                className="w-full pl-6 border-l-2 border-neutral-700"
-              >
-                <p className="text-neutral-500">{message.content}</p>
-              </div>
-            ),
-            assistant: (
-              <div key={index} className="w-full">
-                <p>{message.content}</p>
-              </div>
-            ),
-            function: (
-              <div key={index} className="w-full">
-                <img
-                  src={message.content}
-                  className="rounded-2xl fade-in-image"
-                />
-              </div>
-            ),
-          };
+          const isLastMessage = index === messages.length - 1;
 
-          return messageTypes[
-            message.role as 'user' | 'assistant' | 'function'
-          ];
+          switch (message.role) {
+            case 'user':
+              return (
+                <div
+                  key={index}
+                  className="w-full pl-6 border-l-2 border-neutral-700"
+                >
+                  <p className="text-neutral-500">{message.content}</p>
+                </div>
+              );
+            case 'assistant':
+              return (
+                <div key={index} className="w-full">
+                  <p>{message.content}</p>
+                </div>
+              );
+            case 'function':
+              return (
+                <div key={index} className="w-full">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={message.content}
+                    className="rounded-2xl fade-in-image"
+                    onLoad={isLastMessage ? handleImageLoad : undefined}
+                    ref={isLastMessage ? lastImageRef : null}
+                    alt="Generated image"
+                  />
+                </div>
+              );
+            default:
+              return null;
+          }
         })}
-        <div ref={containerBottomRef} />
+        <div ref={lastMessageDivRef as React.RefObject<HTMLDivElement>}></div>
       </div>
       <Input
         placeholder="What do you do?"

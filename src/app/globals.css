@@ -25,7 +25,7 @@
   }
 
   :root {
-    --background: @apply bg-neutral-950;
+    --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -57,7 +57,7 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: @apply bg-neutral-950;
     --foreground: 210 40% 98%;
 
     --card: 222.2 84% 4.9%;
