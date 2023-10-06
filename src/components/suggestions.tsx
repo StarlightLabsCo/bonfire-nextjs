@@ -12,7 +12,7 @@ export function Suggestions() {
       {suggestions.map((suggestion, index) => (
         <button
           key={index}
-          className="px-3 py-1 border rounded-full border-neutral-900 hover:border-neutral-800 text-neutral-600 hover:text-neutral-500"
+          className="px-3 py-1 border rounded-full border-neutral-900 hover:border-neutral-800 text-neutral-600 hover:text-neutral-500 fade-in-2s"
           onClick={() => {
             sendJSON({
               type: 'add-player-message',

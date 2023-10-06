@@ -109,7 +109,7 @@ export function Lobby({
         submit={submit}
         placeholder="Describe your adventure..."
         disabled={submitted}
-        className={cn(submitted && 'cursor-not-allowed fade-out-input')}
+        className={cn(submitted && 'cursor-not-allowed fade-out-2s')}
       />
     </div>
   );

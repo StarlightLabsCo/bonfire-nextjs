@@ -96,7 +96,7 @@ export function Story({
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={message.content}
-                    className="rounded-2xl fade-in-image"
+                    className="rounded-2xl fade-in-2s"
                     onLoad={isLastMessage ? handleImageLoad : undefined}
                     ref={isLastMessage ? lastImageRef : null}
                     alt="Generated image"
