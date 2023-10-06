@@ -68,14 +68,14 @@ const Input: FC<InputProps> = ({
 
   return (
     <div className={cn(`flex flex-col w-full mt-8`, className)}>
-      <div className="h-9">
+      <div className="flex flex-wrap items-center justify-between mb-2">
         {recording && <FrequencyVisualizer data={frequencyData} />}
         {suggestions.length > 0 && <Suggestions />}
       </div>
-      <div className="flex h-9 items-center bg-neutral-900 rounded-2xl px-4 py-1 disabled:cursor-not-allowed disabled:opacity-50">
+      <div className="flex items-center px-4 py-2 bg-neutral-900 rounded-2xl disabled:cursor-not-allowed disabled:opacity-50">
         <input
           placeholder={placeholder}
-          className="w-full text-sm placeholder:text-neutral-500 bg-neutral-900 focus:outline-none"
+          className="w-full py-2 text-sm placeholder:text-neutral-500 bg-neutral-900 focus:outline-none"
           value={value}
           onChange={(event) => setValue(event.target.value)}
           onKeyDown={(event) => {

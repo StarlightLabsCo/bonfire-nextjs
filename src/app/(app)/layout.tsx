@@ -22,7 +22,7 @@ export default async function AppLayout({
       <AudioContextProvider>
         <MessagesProvider>
           <div className="h-screen bg-neutral-950">
-            <div className="h-full flex flex-col max-w-5xl mx-auto">
+            <div className="flex flex-col h-full max-w-5xl py-4 mx-auto">
               <Navbar user={user} />
               <div className="h-[calc(100%-3rem)]">{children}</div>
             </div>

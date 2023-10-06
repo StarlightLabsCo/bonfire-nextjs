@@ -8,11 +8,11 @@ const FrequencyVisualizer: FC<FrequencyVisualizerProps> = ({ data }) => {
   const normalizedData = Array.from(data).map((value) => value / 255);
 
   return (
-    <div className="w-full h-full flex justify-center items-center">
+    <div className="flex items-center justify-center w-8 h-8">
       {normalizedData.map((value, index) => (
         <div
           key={index}
-          className="flex flex-col justify-center items-center"
+          className="flex flex-col items-center justify-center"
           style={{
             width: '1rem',
             transition: 'height 0.1s ease-out, transform 0.1s ease-out',

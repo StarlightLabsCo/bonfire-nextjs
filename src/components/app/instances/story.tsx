@@ -67,7 +67,7 @@ export function Story({
   };
 
   return (
-    <div className="h-full flex flex-col items-center w-full px-8 pb-2 md:px-16">
+    <div className="flex flex-col items-center w-full h-full px-8 pb-2 md:px-16">
       <div
         className={`${cormorantGaramond.className} h-[calc(100%-2.25rem)] flex flex-col items-center w-full overflow-y-auto gap-y-8 leading-8 font-[400] text-base md:text-lg`}
       >
@@ -107,7 +107,7 @@ export function Story({
               return null;
           }
         })}
-        <div ref={lastMessageDivRef as React.RefObject<HTMLDivElement>}></div>
+        <div ref={lastMessageDivRef}></div>
       </div>
       <Input
         placeholder="What do you do?"
