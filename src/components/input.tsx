@@ -10,7 +10,6 @@ import {
 } from 'react';
 import { AudioProcessorContext } from './app/audio-context';
 import { WebSocketContext } from './app/ws-context';
-import FrequencyVisualizer from './frequency-visualizer';
 import { MessagesContext } from './app/messages-context';
 import { Suggestions } from './suggestions';
 
@@ -37,19 +36,8 @@ const Input: FC<InputProps> = ({
     AudioProcessorContext,
   );
   const [recording, setRecording] = useState<boolean>(false);
-  const [frequencyData, setFrequencyData] = useState(new Uint8Array(4));
 
   const { suggestions } = useContext(MessagesContext);
-
-  useEffect(() => {
-    if (!audioRecorder || !recording) return;
-
-    const animate = () => {
-      setFrequencyData(audioRecorder.getFrequencyData());
-      requestAnimationFrame(animate);
-    };
-    animate();
-  }, [audioRecorder, recording]);
 
   useEffect(() => {
     if (transcription) {
@@ -69,7 +57,6 @@ const Input: FC<InputProps> = ({
   return (
     <div className={cn(`flex flex-col w-full mt-8`, className)}>
       <div className="flex flex-wrap items-center justify-between mb-2">
-        {recording && <FrequencyVisualizer data={frequencyData} />}
         {suggestions.length > 0 && <Suggestions />}
       </div>
       <div className="flex items-center px-4 py-2 bg-neutral-900 rounded-2xl disabled:cursor-not-allowed disabled:opacity-50">
