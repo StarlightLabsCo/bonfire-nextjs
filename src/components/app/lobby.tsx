@@ -28,7 +28,7 @@ export function Lobby({
   const [description, setDescription] = useState('');
 
   const { sendJSON } = useContext(WebSocketContext);
-  const { setMessages } = useContext(MessagesContext);
+  const { setMessages, setSuggestions } = useContext(MessagesContext);
 
   const createWelcome = (description: string) => {
     sendJSON({
@@ -55,6 +55,7 @@ export function Lobby({
 
   useEffect(() => {
     setMessages([]);
+    setSuggestions([]);
   }, []);
 
   useEffect(() => {
