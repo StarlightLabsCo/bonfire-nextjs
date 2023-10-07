@@ -3,7 +3,7 @@
 import { UserNav } from '@/components/user-nav';
 import { WebSocketStatusIndicator } from './ws-indicator';
 import { User } from 'next-auth';
-import { MuteButton } from '@/components/mute-button';
+import { MuteButton } from '@/components/audio/mute-button';
 
 export function Navbar({ user }: { user: { id: string } & User }) {
   return (

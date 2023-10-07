@@ -1,6 +1,6 @@
 import { getCurrentUser } from '@/lib/session';
 
-import { Lobby } from '@/components/app/lobby';
+import { Lobby } from '@/components/pages/lobby';
 
 export default async function Home() {
   const user = await getCurrentUser();

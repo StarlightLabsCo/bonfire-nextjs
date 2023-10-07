@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { WebSocketContext } from './ws-context';
+import { WebSocketContext } from './contexts/ws-context';
 import { cn } from '@/lib/utils';
 
 export function WebSocketStatusIndicator() {

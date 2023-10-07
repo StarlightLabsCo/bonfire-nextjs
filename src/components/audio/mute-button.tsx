@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react';
-import { Icons } from './icons';
-import { AudioProcessorContext } from './app/audio-context';
+import { Icons } from '../icons';
+import { AudioProcessorContext } from '../contexts/audio-context';
 
 export function MuteButton({ className }: { className?: string }) {
   const [muted, setMuted] = useState(false);

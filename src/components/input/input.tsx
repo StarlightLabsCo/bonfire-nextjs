@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import { PaperPlaneIcon } from '@radix-ui/react-icons';
-import { Icons } from './icons';
+import { Icons } from '../icons';
 import {
   FC,
   InputHTMLAttributes,
@@ -8,9 +8,9 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { AudioProcessorContext } from './app/audio-context';
-import { WebSocketContext } from './app/ws-context';
-import { MessagesContext } from './app/messages-context';
+import { AudioProcessorContext } from '../contexts/audio-context';
+import { WebSocketContext } from '../contexts/ws-context';
+import { MessagesContext } from '../contexts/messages-context';
 import { Suggestions } from './suggestions';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -37,7 +37,7 @@ const Input: FC<InputProps> = ({
   );
   const [recording, setRecording] = useState<boolean>(false);
 
-  const { suggestions } = useContext(MessagesContext);
+  const { suggestions, setSuggestions } = useContext(MessagesContext);
 
   useEffect(() => {
     if (transcription) {
@@ -48,6 +48,7 @@ const Input: FC<InputProps> = ({
   function submitValue() {
     submit();
     setTranscription('');
+    setSuggestions([]);
   }
 
   if (!socket || socket.readyState !== WebSocket.OPEN) {

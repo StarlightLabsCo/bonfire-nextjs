@@ -1,11 +1,11 @@
 'use client';
 
 import { useContext, useEffect, useState, useRef } from 'react';
-import { MessagesContext } from '@/components/app/messages-context';
-import { WebSocketContext } from '@/components/app/ws-context';
+import { MessagesContext } from '../contexts/messages-context';
+import { WebSocketContext } from '../contexts/ws-context';
 import { Message } from '@prisma/client'; // Assuming RoleType exists
 import { IBM_Plex_Serif } from 'next/font/google';
-import { Input } from '@/components/input';
+import { Input } from '@/components/input/input';
 
 export const cormorantGaramond = IBM_Plex_Serif({
   subsets: ['latin'],
@@ -39,7 +39,7 @@ export function Story({
       },
     });
 
-    setMessages([...messages, { role: 'user', content: input }]);
+    setMessages([...messages, { id: '', role: 'user', content: input }]);
 
     setInput('');
   };
@@ -91,18 +91,23 @@ export function Story({
                 </div>
               );
             case 'function':
-              return (
-                <div key={index} className="w-full">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={message.content}
-                    className="rounded-2xl fade-in-2s"
-                    onLoad={isLastMessage ? handleImageLoad : undefined}
-                    ref={isLastMessage ? lastImageRef : null}
-                    alt="Generated image"
-                  />
-                </div>
-              );
+              const data = JSON.parse(message.content);
+              if (data.type === 'generate_image') {
+                return (
+                  <div key={index} className="w-full">
+                    {data.payload['imageURL'] && (
+                      <img
+                        src={data.payload['imageURL']}
+                        className="rounded-2xl fade-in-2s"
+                        onLoad={isLastMessage ? handleImageLoad : undefined}
+                        ref={isLastMessage ? lastImageRef : null}
+                        alt="Generated image"
+                      />
+                    )}
+                  </div>
+                );
+              } else return null;
+
             default:
               return null;
           }

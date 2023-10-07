@@ -4,6 +4,7 @@ import { createContext, useEffect, useState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/navigation';
 import { JsonObject } from 'next-auth/adapters';
+import { WebSocketResponseType } from '@/lib/websocket-schema';
 
 interface WebSocketContextType {
   socket: WebSocket | null;
@@ -37,13 +38,15 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   function handleMessage(event: MessageEvent) {
     const data = JSON.parse(event.data);
 
-    if (data.type === 'instance-created') {
-      setInstanceId(data.payload.instanceId);
-      router.push(`/instances/${data.payload.instanceId}`);
-    } else if (data.type === 'error') {
+    console.log('data', data);
+
+    if (data.type === WebSocketResponseType.instance) {
+      setInstanceId(data.payload.id);
+      router.push(`/instances/${data.payload.id}`);
+    } else if (data.type === WebSocketResponseType.error) {
       toast({
         title: 'Error',
-        description: data.payload.message,
+        description: data.payload.content,
       });
     }
   }

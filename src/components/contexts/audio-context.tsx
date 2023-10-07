@@ -8,6 +8,7 @@ import {
 } from '@/lib/audio';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { WebSocketContext } from './ws-context';
+import { WebSocketResponseType } from '@/lib/websocket-schema';
 
 interface AudioProcessorContextType {
   audioContext: AudioContext | null;
@@ -94,13 +95,14 @@ export function AudioContextProvider({
     function handleMessage(event: MessageEvent) {
       const data = JSON.parse(event.data);
 
-      console.log(data);
-
-      if (data.type === 'audio') {
-        bufferBase64Audio(audioContext, bufferedPlayerNode, data.payload.audio);
-      } else if (data.type === 'transcription') {
-        setTranscription(data.payload);
-        console.log(data.payload);
+      if (data.type === WebSocketResponseType.audio) {
+        bufferBase64Audio(
+          audioContext,
+          bufferedPlayerNode,
+          data.payload.content,
+        );
+      } else if (data.type === WebSocketResponseType.transcription) {
+        setTranscription(data.payload.content);
       }
     }
 

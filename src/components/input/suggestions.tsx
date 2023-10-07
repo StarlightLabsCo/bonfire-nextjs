@@ -1,6 +1,6 @@
 import { useContext } from 'react';
-import { WebSocketContext } from './app/ws-context';
-import { MessagesContext } from './app/messages-context';
+import { WebSocketContext } from '../contexts/ws-context';
+import { MessagesContext } from '../contexts/messages-context';
 
 export function Suggestions() {
   const { sendJSON, instanceId } = useContext(WebSocketContext);
@@ -22,7 +22,10 @@ export function Suggestions() {
               },
             });
 
-            setMessages([...messages, { role: 'user', content: suggestion }]);
+            setMessages([
+              ...messages,
+              { id: '', role: 'user', content: suggestion },
+            ]);
 
             setSuggestions([]);
           }}
