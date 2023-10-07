@@ -12,6 +12,7 @@ import { AudioProcessorContext } from '../contexts/audio-context';
 import { WebSocketContext } from '../contexts/ws-context';
 import { MessagesContext } from '../contexts/messages-context';
 import { Suggestions } from './suggestions';
+import { Button } from '../ui/button';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   value: string;
@@ -37,7 +38,7 @@ const Input: FC<InputProps> = ({
   );
   const [recording, setRecording] = useState<boolean>(false);
 
-  const { suggestions, setSuggestions } = useContext(MessagesContext);
+  const { messages, setMessages } = useContext(MessagesContext);
 
   useEffect(() => {
     if (transcription) {
@@ -48,7 +49,6 @@ const Input: FC<InputProps> = ({
   function submitValue() {
     submit();
     setTranscription('');
-    setSuggestions([]);
   }
 
   if (!socket || socket.readyState !== WebSocket.OPEN) {
@@ -58,7 +58,8 @@ const Input: FC<InputProps> = ({
   return (
     <div className={cn(`flex flex-col w-full mt-8`, className)}>
       <div className="flex flex-wrap items-center justify-between mb-2">
-        {suggestions.length > 0 && <Suggestions />}
+        <Suggestions />
+        <Button>Undo</Button>
       </div>
       <div className="flex items-center px-4 py-2 bg-neutral-900 rounded-2xl disabled:cursor-not-allowed disabled:opacity-50">
         <input

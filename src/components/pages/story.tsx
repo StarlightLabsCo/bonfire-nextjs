@@ -91,6 +91,7 @@ export function Story({
                 </div>
               );
             case 'function':
+              console.log('message', message);
               const data = JSON.parse(message.content);
               if (data.type === 'generate_image') {
                 return (
