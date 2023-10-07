@@ -2,6 +2,7 @@ enum WebSocketResponseType {
   'instance',
   'message',
   'message-append',
+  'delete-messages',
   'image',
   'suggestions',
   'audio',
