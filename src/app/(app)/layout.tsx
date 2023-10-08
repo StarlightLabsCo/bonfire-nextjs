@@ -4,7 +4,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { WebSocketProvider } from '@/components/contexts/ws-context';
 import { AudioContextProvider } from '@/components/contexts/audio-context';
 import { MessagesProvider } from '@/components/contexts/messages-context';
-import { Navbar } from '@/components/navbar';
+import { Sidebar } from '@/components/sidebar';
 
 export default async function AppLayout({
   children,
@@ -21,10 +21,10 @@ export default async function AppLayout({
     <WebSocketProvider>
       <AudioContextProvider>
         <MessagesProvider>
-          <div className="h-screen bg-neutral-950">
-            <div className="flex flex-col h-full max-w-5xl py-4 mx-auto">
-              <Navbar user={user} />
-              <div className="h-[calc(100%-3rem)]">{children}</div>
+          <div className="h-screen bg-neutral-950 flex ">
+            <Sidebar user={user} />
+            <div className="flex flex-col w-full h-full max-w-5xl mx-auto">
+              <div className="h-full">{children}</div>
             </div>
             <Toaster />
           </div>
