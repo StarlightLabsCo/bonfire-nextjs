@@ -102,7 +102,12 @@ const Input: FC<InputProps> = ({
     <div className={cn(`flex flex-col w-full mt-8`, className)}>
       <div className="flex flex-wrap items-center justify-between mb-2">
         <Suggestions />
-        <Button onClick={undo}>Undo</Button>
+        <button
+          className="px-3 py-1 h-full border rounded-full border-neutral-900 hover:border-neutral-800 text-neutral-600 hover:text-neutral-500 fade-in-2s"
+          onClick={undo}
+        >
+          <Icons.undo />
+        </button>
       </div>
       <div className="flex items-center px-4 py-2 bg-neutral-900 rounded-2xl disabled:cursor-not-allowed disabled:opacity-50">
         <input
