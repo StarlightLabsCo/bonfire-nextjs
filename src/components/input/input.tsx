@@ -103,9 +103,10 @@ const Input: FC<InputProps> = ({
       <div className="flex flex-wrap items-center justify-between mb-2">
         <Suggestions />
         <button
-          className="px-3 py-1 h-full border rounded-full border-neutral-900 hover:border-neutral-800 text-neutral-600 hover:text-neutral-500 fade-in-2s"
+          className="flex flex-row items-center gap-x-2 text-sm px-3 py-1 h-full border rounded-full border-neutral-900 hover:border-neutral-800 text-neutral-600 hover:text-neutral-500 fade-in-2s"
           onClick={undo}
         >
+          Undo
           <Icons.undo />
         </button>
       </div>
