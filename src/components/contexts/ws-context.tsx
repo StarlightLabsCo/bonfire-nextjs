@@ -10,12 +10,14 @@ interface WebSocketContextType {
   socket: WebSocket | null;
   sendJSON: (data: JsonObject) => void;
   instanceId?: string | null;
+  setInstanceId?: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 export const WebSocketContext = createContext<WebSocketContextType>({
   socket: null,
   sendJSON: () => {},
   instanceId: null,
+  setInstanceId: () => {},
 });
 
 let exponentialBackoff = 1000;
@@ -41,7 +43,6 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     console.log('data', data);
 
     if (data.type === WebSocketResponseType.instance) {
-      setInstanceId(data.payload.id);
       router.push(`/instances/${data.payload.id}`);
     } else if (data.type === WebSocketResponseType.error) {
       toast({
@@ -112,7 +113,9 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <WebSocketContext.Provider value={{ socket, sendJSON, instanceId }}>
+    <WebSocketContext.Provider
+      value={{ socket, sendJSON, instanceId, setInstanceId }}
+    >
       {children}
     </WebSocketContext.Provider>
   );

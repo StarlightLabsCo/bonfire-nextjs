@@ -29,7 +29,7 @@ export function Lobby({
   const [description, setDescription] = useState('');
 
   const { sendJSON } = useContext(WebSocketContext);
-  const { setMessages, setSuggestions } = useContext(MessagesContext);
+  const { setMessages } = useContext(MessagesContext);
   const { setTranscription } = useContext(AudioProcessorContext);
 
   const createWelcome = (description: string) => {
@@ -57,7 +57,6 @@ export function Lobby({
 
   useEffect(() => {
     setMessages([]);
-    setSuggestions([]);
     setTranscription('');
   }, []);
 
