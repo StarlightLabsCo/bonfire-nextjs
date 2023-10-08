@@ -1,7 +1,7 @@
 'use client';
 
 import { useContext, useEffect, useState, useRef } from 'react';
-import { MessagesContext } from '../contexts/messages-context';
+import { MessageLike, MessagesContext } from '../contexts/messages-context';
 import { WebSocketContext } from '../contexts/ws-context';
 import { Message } from '@prisma/client'; // Assuming RoleType exists
 import { IBM_Plex_Serif } from 'next/font/google';
@@ -51,11 +51,7 @@ export function Story({
   }, [instanceId, setInstanceId]);
 
   useEffect(() => {
-    if (
-      messages.length > 0 &&
-      messages[messages.length - 1].role !== 'function' &&
-      lastMessageDivRef.current
-    ) {
+    if (messages.length > 0 && lastMessageDivRef.current) {
       lastMessageDivRef.current.scrollIntoView({
         behavior: 'smooth',
         block: 'start',
@@ -72,13 +68,34 @@ export function Story({
     }
   };
 
+  function findLastIndex<T>(
+    array: T[],
+    predicate: (value: T, index: number, array: T[]) => boolean,
+  ): number {
+    let l = array.length;
+    while (l--) {
+      if (predicate(array[l], l, array)) return l;
+    }
+    return -1;
+  }
+
+  // Find the last valid message index
+  const lastValidMessageIndex = findLastIndex(
+    messages,
+    (message: MessageLike) =>
+      message.role === 'user' ||
+      message.role === 'assistant' ||
+      (message.role === 'function' &&
+        JSON.parse(message.content).type === 'generate_image'),
+  );
+
   return (
     <div className="flex flex-col items-center w-full h-full px-8 pb-2 md:px-16">
       <div
         className={`${cormorantGaramond.className} h-[calc(100%-2.25rem)] flex flex-col items-center w-full overflow-y-auto gap-y-8 leading-8 font-[400] text-base md:text-lg`}
       >
-        {messages.map((message, index: number) => {
-          const isLastMessage = index === messages.length - 1;
+        {messages.map((message: MessageLike, index: number) => {
+          const isLastValidMessage = index === lastValidMessageIndex;
 
           switch (message.role) {
             case 'user':
@@ -86,18 +103,24 @@ export function Story({
                 <div
                   key={index}
                   className="w-full pl-6 border-l-2 border-neutral-700"
+                  // Attach the ref if it's the last valid message
+                  ref={isLastValidMessage ? lastMessageDivRef : null}
                 >
                   <p className="text-neutral-500">{message.content}</p>
                 </div>
               );
             case 'assistant':
               return (
-                <div key={index} className="w-full">
+                <div
+                  key={index}
+                  className="w-full"
+                  // Attach the ref if it's the last valid message
+                  ref={isLastValidMessage ? lastMessageDivRef : null}
+                >
                   <p>{message.content}</p>
                 </div>
               );
             case 'function':
-              console.log('message', message);
               const data = JSON.parse(message.content);
               if (data.type === 'generate_image') {
                 return (
@@ -106,8 +129,10 @@ export function Story({
                       <img
                         src={data.payload['imageURL']}
                         className="rounded-2xl fade-in-2s"
-                        onLoad={isLastMessage ? handleImageLoad : undefined}
-                        ref={isLastMessage ? lastImageRef : null}
+                        onLoad={
+                          isLastValidMessage ? handleImageLoad : undefined
+                        }
+                        ref={isLastValidMessage ? lastImageRef : null}
                         alt="Generated image"
                       />
                     )}
