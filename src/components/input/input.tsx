@@ -10,10 +10,8 @@ import {
 } from 'react';
 import { AudioProcessorContext } from '../contexts/audio-context';
 import { WebSocketContext } from '../contexts/ws-context';
-import { MessageLike, MessagesContext } from '../contexts/messages-context';
 import { Suggestions } from './suggestions';
-import { Button } from '../ui/button';
-import { MessageRole } from '@prisma/client';
+import { UndoButton } from './undo-button';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   value: string;
@@ -33,7 +31,7 @@ const Input: FC<InputProps> = ({
   ...props
 }) => {
   const { socket, sendJSON, instanceId } = useContext(WebSocketContext);
-  const { messages, setMessages } = useContext(MessagesContext);
+
   const { audioRecorder, transcription, setTranscription } = useContext(
     AudioProcessorContext,
   );
@@ -51,49 +49,6 @@ const Input: FC<InputProps> = ({
     setTranscription('');
   }
 
-  function getMessagesToUndo() {
-    const messagesCopy = [...messages].reverse();
-    let generateSuggestionsCount = 0;
-
-    for (let i = 0; i < messagesCopy.length; i++) {
-      const message = messagesCopy[i];
-
-      if (message.role === MessageRole.function) {
-        const content = JSON.parse(message.content);
-
-        if (content.type === 'generate_suggestions') {
-          generateSuggestionsCount++;
-          if (generateSuggestionsCount === 2) {
-            return messagesCopy.slice(0, i);
-          }
-        }
-
-        continue;
-      }
-    }
-
-    return [];
-  }
-
-  function removeMessages(messagesToRemove: MessageLike[]) {
-    setMessages((messages) =>
-      messages.filter((message) => !messagesToRemove.includes(message)),
-    );
-  }
-
-  function undo() {
-    // Step 1: Optimistically remove messages
-    const messagesToUndo = getMessagesToUndo();
-    removeMessages(messagesToUndo);
-
-    sendJSON({
-      type: 'undo',
-      payload: {
-        instanceId,
-      },
-    });
-  }
-
   if (!socket || socket.readyState !== WebSocket.OPEN) {
     return <div>Connecting...</div>;
   }
@@ -102,13 +57,7 @@ const Input: FC<InputProps> = ({
     <div className={cn(`flex flex-col w-full mt-8`, className)}>
       <div className="flex flex-wrap items-center justify-between mb-2">
         <Suggestions />
-        <button
-          className="flex flex-row items-center gap-x-2 text-sm px-3 py-1 h-full border rounded-full border-neutral-900 hover:border-neutral-800 text-neutral-600 hover:text-neutral-500 fade-in-2s"
-          onClick={undo}
-        >
-          Undo
-          <Icons.undo />
-        </button>
+        <UndoButton />
       </div>
       <div className="flex items-center px-4 py-2 bg-neutral-900 rounded-2xl disabled:cursor-not-allowed disabled:opacity-50">
         <input

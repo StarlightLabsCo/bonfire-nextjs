@@ -8,24 +8,24 @@ export function Suggestions() {
   const { messages, setMessages } = useContext(MessagesContext);
 
   useEffect(() => {
-    if (messages.length === 0) {
-      return;
-    }
+    if (messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
 
-    const lastMessage = messages[messages.length - 1];
+      if (lastMessage.role === 'function') {
+        const lastMessageContent: {
+          type: string;
+          payload: string[];
+        } = lastMessage && JSON.parse(lastMessage.content);
 
-    if (lastMessage.role === 'function') {
-      const lastMessageContent: {
-        type: string;
-        payload: string[];
-      } = lastMessage && JSON.parse(lastMessage.content);
-
-      if (
-        lastMessageContent &&
-        lastMessageContent.type === 'generate_suggestions'
-      ) {
-        setSuggestions(lastMessageContent.payload);
+        if (
+          lastMessageContent &&
+          lastMessageContent.type === 'generate_suggestions'
+        ) {
+          setSuggestions(lastMessageContent.payload);
+        }
       }
+    } else {
+      setSuggestions([]);
     }
   }, [messages]);
 
