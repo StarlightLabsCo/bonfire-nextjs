@@ -23,7 +23,7 @@ export function Story({
   const lastMessageDivRef = useRef<HTMLDivElement>(null);
   const lastImageRef = useRef<HTMLImageElement>(null);
 
-  const { sendJSON } = useContext(WebSocketContext);
+  const { sendJSON, setInstanceId } = useContext(WebSocketContext);
   const { messages, setMessages } = useContext(MessagesContext);
 
   if (messages.length === 0) {
@@ -43,6 +43,12 @@ export function Story({
 
     setInput('');
   };
+
+  useEffect(() => {
+    if (instanceId && setInstanceId) {
+      setInstanceId(instanceId);
+    }
+  }, [instanceId, setInstanceId]);
 
   useEffect(() => {
     if (

@@ -10,9 +10,10 @@ import {
 } from 'react';
 import { AudioProcessorContext } from '../contexts/audio-context';
 import { WebSocketContext } from '../contexts/ws-context';
-import { MessagesContext } from '../contexts/messages-context';
+import { MessageLike, MessagesContext } from '../contexts/messages-context';
 import { Suggestions } from './suggestions';
 import { Button } from '../ui/button';
+import { MessageRole } from '@prisma/client';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   value: string;
@@ -31,14 +32,13 @@ const Input: FC<InputProps> = ({
   className,
   ...props
 }) => {
-  const { socket } = useContext(WebSocketContext);
-
+  const { socket, sendJSON, instanceId } = useContext(WebSocketContext);
+  const { messages, setMessages } = useContext(MessagesContext);
   const { audioRecorder, transcription, setTranscription } = useContext(
     AudioProcessorContext,
   );
-  const [recording, setRecording] = useState<boolean>(false);
 
-  const { messages, setMessages } = useContext(MessagesContext);
+  const [recording, setRecording] = useState<boolean>(false);
 
   useEffect(() => {
     if (transcription) {
@@ -51,6 +51,49 @@ const Input: FC<InputProps> = ({
     setTranscription('');
   }
 
+  function getMessagesToUndo() {
+    const messagesCopy = [...messages].reverse();
+    let generateSuggestionsCount = 0;
+
+    for (let i = 0; i < messagesCopy.length; i++) {
+      const message = messagesCopy[i];
+
+      if (message.role === MessageRole.function) {
+        const content = JSON.parse(message.content);
+
+        if (content.type === 'generate_suggestions') {
+          generateSuggestionsCount++;
+          if (generateSuggestionsCount === 2) {
+            return messagesCopy.slice(0, i);
+          }
+        }
+
+        continue;
+      }
+    }
+
+    return [];
+  }
+
+  function removeMessages(messagesToRemove: MessageLike[]) {
+    setMessages((messages) =>
+      messages.filter((message) => !messagesToRemove.includes(message)),
+    );
+  }
+
+  function undo() {
+    // Step 1: Optimistically remove messages
+    const messagesToUndo = getMessagesToUndo();
+    removeMessages(messagesToUndo);
+
+    sendJSON({
+      type: 'undo',
+      payload: {
+        instanceId,
+      },
+    });
+  }
+
   if (!socket || socket.readyState !== WebSocket.OPEN) {
     return <div>Connecting...</div>;
   }
@@ -59,7 +102,7 @@ const Input: FC<InputProps> = ({
     <div className={cn(`flex flex-col w-full mt-8`, className)}>
       <div className="flex flex-wrap items-center justify-between mb-2">
         <Suggestions />
-        <Button>Undo</Button>
+        <Button onClick={undo}>Undo</Button>
       </div>
       <div className="flex items-center px-4 py-2 bg-neutral-900 rounded-2xl disabled:cursor-not-allowed disabled:opacity-50">
         <input

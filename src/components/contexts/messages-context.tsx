@@ -5,7 +5,9 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { WebSocketContext } from './ws-context';
 import { WebSocketResponseType } from '@/lib/websocket-schema';
 
-type MessageLike = Message | { id: string; role: string; content: string };
+export type MessageLike =
+  | Message
+  | { id: string; role: string; content: string };
 
 type MessagesContextValue = {
   messages: Array<MessageLike>;
@@ -25,6 +27,8 @@ export function MessagesProvider({ children }: { children: React.ReactNode }) {
     if (socket) {
       socket.addEventListener('message', (event) => {
         const data = JSON.parse(event.data);
+
+        console.log('data', data);
 
         if (data.type === WebSocketResponseType.message) {
           setMessages((messages) => {
@@ -73,12 +77,6 @@ export function MessagesProvider({ children }: { children: React.ReactNode }) {
               console.error(`Message ${data.payload.id} does not exist.`);
               return messages;
             }
-          });
-        } else if (data.type === WebSocketResponseType['delete-messages']) {
-          setMessages((messages) => {
-            return messages.filter((message) => {
-              return !data.payload.ids.includes(message.id);
-            });
           });
         } else if (data.type === WebSocketResponseType.image) {
           setMessages((messages) => {
