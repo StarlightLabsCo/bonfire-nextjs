@@ -1,15 +1,13 @@
 'use client';
 
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useWebSocket } from '../contexts/ws-context';
 import { User } from 'next-auth';
 import { Input } from '@/components/input/input';
 import { useMessages } from '../contexts/messages-context';
 import { cn } from '@/lib/utils';
-import {
-  AudioProcessorContext,
-  useAudioProcessor,
-} from '../contexts/audio-context';
+import { useAudioProcessor } from '../contexts/audio-context';
+import { OpenSidebar } from '../open-sidebar';
 
 const images = [
   'https://cdn.midjourney.com/9ed73ce9-cea2-46f3-b846-f5a7dc7d56ce/0_0_384_N.webp',
@@ -92,6 +90,7 @@ export function Lobby({
 
   return (
     <div className="flex flex-col items-center justify-center w-full h-full p-5 gap-y-5 grow">
+      <OpenSidebar />
       <div className="relative flex items-center justify-center w-full">
         <div className="relative">
           <img

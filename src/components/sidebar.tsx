@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { useSidebar } from './contexts/sidebar-context';
 import { Instance } from '@prisma/client';
-import router, { useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 export function Sidebar({
   user,
@@ -48,7 +48,12 @@ export function Sidebar({
         )}
       >
         <div className="w-full h-12 p-2 flex items-center gap-x-2">
-          <div className="h-8 flex grow p-2 gap-x-2 items-center rounded-md border border-white/10 hover:cursor-pointer">
+          <div
+            className="h-8 flex grow p-2 gap-x-2 items-center rounded-md border border-white/10 hover:cursor-pointer"
+            onClick={() => {
+              router.push('/');
+            }}
+          >
             <Icons.plus className="w-4 h-4" />
             <div className="text-xs font-light">New Story</div>
           </div>
@@ -59,7 +64,7 @@ export function Sidebar({
             <Icons.sidepanel className="w-4 h-4" />
           </div>
         </div>
-        <div className="w-full grow px-2 flex flex-col overflow-scroll">
+        <div className="w-full grow px-2 flex flex-col overflow-y-scroll">
           <div className="text-xs p-2">Past Stories</div>
           <div className="flex flex-col gap-y-2">
             {instances.map((instance, index) => (
