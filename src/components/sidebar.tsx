@@ -75,8 +75,10 @@ export function Sidebar({
                   router.push(`/instances/${instance.id}`);
                 }}
               >
-                <Icons.logo className="w-4 h-4 mr-2" />
-                {instance.description}
+                <Icons.logo className="w-4 h-4 mr-2 flex-shrink-0" />
+                <div className="overflow-hidden text-ellipsis whitespace-nowrap">
+                  {instance.description}
+                </div>
               </div>
             ))}
           </div>
