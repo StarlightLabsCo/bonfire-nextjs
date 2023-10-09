@@ -1,11 +1,12 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { MessageLike, useMessages } from '../contexts/messages-context';
-import { useWebSocket } from '../contexts/ws-context';
-import { Message } from '@prisma/client'; // Assuming RoleType exists
+
+import { Message } from '@prisma/client';
 import { IBM_Plex_Serif } from 'next/font/google';
 import { Input } from '@/components/input/input';
+import { MessageLike, useMessages } from '../contexts/messages-context';
+import { useWebSocket } from '../contexts/ws-context';
 import { OpenSidebar } from '../open-sidebar';
 
 export const cormorantGaramond = IBM_Plex_Serif({
@@ -21,16 +22,16 @@ export function Story({
   dbMessages: Message[];
 }) {
   const [input, setInput] = useState('');
+
   const lastMessageDivRef = useRef<HTMLDivElement>(null);
   const lastImageRef = useRef<HTMLImageElement>(null);
 
   const { sendJSON, setInstanceId } = useWebSocket();
   const { messages, setMessages } = useMessages();
 
-  // TODO: we need to update the messages if dbMessages changes because of route change
-  if (messages.length === 0) {
+  useEffect(() => {
     setMessages(dbMessages);
-  }
+  }, [dbMessages, instanceId, setMessages]);
 
   const submit = () => {
     sendJSON({
