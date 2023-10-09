@@ -4,17 +4,19 @@ import { Icons } from './icons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import { useSidebar } from './contexts/sidebar-context';
-
-const stories = ['Story 1', 'Story 2', 'Story 3', 'Story 4', 'Story 5'];
+import { Instance } from '@prisma/client';
+import router, { useRouter } from 'next/navigation';
 
 export function Sidebar({
   user,
+  instances,
 }: {
   user: {
     name?: string | null;
     email?: string | null;
     image?: string | null;
   };
+  instances: Instance[];
 }) {
   let initials = user.name
     ? user.name
@@ -24,6 +26,7 @@ export function Sidebar({
     : '';
 
   const { isSidebarOpen, closeSidebar, setShowSidebarOpen } = useSidebar();
+  const router = useRouter();
 
   const handleTransitionEnd = () => {
     if (!isSidebarOpen) {
@@ -56,16 +59,19 @@ export function Sidebar({
             <Icons.sidepanel className="w-4 h-4" />
           </div>
         </div>
-        <div className="w-full grow px-2 flex flex-col">
+        <div className="w-full grow px-2 flex flex-col overflow-scroll">
           <div className="text-xs p-2">Past Stories</div>
           <div className="flex flex-col gap-y-2">
-            {stories.map((story, index) => (
+            {instances.map((instance, index) => (
               <div
                 key={index}
-                className="h-10 w-full p-2 flex items-center hover:bg-white/10 rounded-md text-xs font-light"
+                className="h-10 w-full p-2 flex items-center hover:bg-white/10 rounded-md text-xs font-light hover:cursor-pointer"
+                onClick={() => {
+                  router.push(`/instances/${instance.id}`);
+                }}
               >
                 <Icons.logo className="w-4 h-4 mr-2" />
-                {story}
+                {instance.description}
               </div>
             ))}
           </div>

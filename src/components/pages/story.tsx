@@ -27,6 +27,7 @@ export function Story({
   const { sendJSON, setInstanceId } = useWebSocket();
   const { messages, setMessages } = useMessages();
 
+  // TODO: we need to update the messages if dbMessages changes because of route change
   if (messages.length === 0) {
     setMessages(dbMessages);
   }
