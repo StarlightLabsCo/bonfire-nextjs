@@ -14,6 +14,16 @@ export default async function Instance({
     redirect('/login');
   }
 
+  const instance = await db.instance.findUnique({
+    where: {
+      id: params.instanceId,
+    },
+  });
+
+  if (!instance || instance.userId !== user.id) {
+    redirect('/');
+  }
+
   // Fetch any from db if this is hard refresh
   const messages = await db.message.findMany({
     where: {
