@@ -1,10 +1,33 @@
 'use client';
 
+import { useCallback, useEffect } from 'react';
 import { useSidebar } from './contexts/sidebar-context';
 import { Icons } from './icons';
 
 export function OpenSidebar() {
-  const { showSidebarOpen, openSidebar } = useSidebar();
+  const { showSidebarOpen, openSidebar, closeSidebar } = useSidebar();
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.shiftKey && event.metaKey && event.key === 's') {
+        event.preventDefault();
+        if (showSidebarOpen) {
+          openSidebar();
+        } else {
+          closeSidebar();
+        }
+      }
+    },
+    [closeSidebar, openSidebar, showSidebarOpen],
+  );
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleKeyDown]);
 
   if (showSidebarOpen) {
     return (
