@@ -7,8 +7,8 @@ import {
   setupAudio,
 } from '@/lib/audio';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { WebSocketContext } from './ws-context';
 import { WebSocketResponseType } from '@/lib/websocket-schema';
+import { useWebSocket } from './ws-context';
 
 interface AudioProcessorContextType {
   audioContext: AudioContext | null;
@@ -33,7 +33,7 @@ export function AudioContextProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const { socket } = useContext(WebSocketContext);
+  const { socket } = useWebSocket();
 
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
 
@@ -128,3 +128,11 @@ export function AudioContextProvider({
     </AudioProcessorContext.Provider>
   );
 }
+
+export const useAudioProcessor = () => {
+  const context = useContext(AudioProcessorContext);
+  if (context === undefined) {
+    throw new Error('useMessages must be used within a MessagesProvider');
+  }
+  return context;
+};

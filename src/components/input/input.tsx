@@ -8,8 +8,11 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { AudioProcessorContext } from '../contexts/audio-context';
-import { WebSocketContext } from '../contexts/ws-context';
+import {
+  AudioProcessorContext,
+  useAudioProcessor,
+} from '../contexts/audio-context';
+import { useWebSocket } from '../contexts/ws-context';
 import { Suggestions } from './suggestions';
 import { UndoButton } from './undo-button';
 
@@ -30,11 +33,10 @@ const Input: FC<InputProps> = ({
   className,
   ...props
 }) => {
-  const { socket, sendJSON, instanceId } = useContext(WebSocketContext);
+  const { socket } = useWebSocket();
 
-  const { audioRecorder, transcription, setTranscription } = useContext(
-    AudioProcessorContext,
-  );
+  const { audioRecorder, transcription, setTranscription } =
+    useAudioProcessor();
 
   const [recording, setRecording] = useState<boolean>(false);
 

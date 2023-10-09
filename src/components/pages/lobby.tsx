@@ -1,12 +1,15 @@
 'use client';
 
 import { useContext, useEffect, useState } from 'react';
-import { WebSocketContext } from '../contexts/ws-context';
+import { useWebSocket } from '../contexts/ws-context';
 import { User } from 'next-auth';
 import { Input } from '@/components/input/input';
-import { MessagesContext } from '../contexts/messages-context';
+import { useMessages } from '../contexts/messages-context';
 import { cn } from '@/lib/utils';
-import { AudioProcessorContext } from '../contexts/audio-context';
+import {
+  AudioProcessorContext,
+  useAudioProcessor,
+} from '../contexts/audio-context';
 
 const images = [
   'https://cdn.midjourney.com/9ed73ce9-cea2-46f3-b846-f5a7dc7d56ce/0_0_384_N.webp',
@@ -28,9 +31,9 @@ export function Lobby({
 
   const [description, setDescription] = useState('');
 
-  const { sendJSON } = useContext(WebSocketContext);
-  const { setMessages } = useContext(MessagesContext);
-  const { setTranscription } = useContext(AudioProcessorContext);
+  const { sendJSON } = useWebSocket();
+  const { setMessages } = useMessages();
+  const { setTranscription } = useAudioProcessor();
 
   const createWelcome = (description: string) => {
     sendJSON({

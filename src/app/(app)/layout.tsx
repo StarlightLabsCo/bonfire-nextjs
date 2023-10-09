@@ -5,6 +5,7 @@ import { WebSocketProvider } from '@/components/contexts/ws-context';
 import { AudioContextProvider } from '@/components/contexts/audio-context';
 import { MessagesProvider } from '@/components/contexts/messages-context';
 import { Sidebar } from '@/components/sidebar';
+import { SidebarProvider } from '@/components/contexts/sidebar-context';
 
 export default async function AppLayout({
   children,
@@ -21,13 +22,15 @@ export default async function AppLayout({
     <WebSocketProvider>
       <AudioContextProvider>
         <MessagesProvider>
-          <div className="h-screen bg-neutral-950 flex ">
-            <Sidebar user={user} />
-            <div className="flex flex-col w-full h-full max-w-5xl mx-auto">
-              <div className="h-full">{children}</div>
+          <SidebarProvider>
+            <div className="h-screen bg-neutral-950 flex">
+              <Sidebar user={user} />
+              <div className="flex flex-col w-full h-full max-w-5xl mx-auto">
+                <div className="h-full">{children}</div>
+              </div>
+              <Toaster />
             </div>
-            <Toaster />
-          </div>
+          </SidebarProvider>
         </MessagesProvider>
       </AudioContextProvider>
     </WebSocketProvider>

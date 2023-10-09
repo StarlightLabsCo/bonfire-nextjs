@@ -1,9 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { WebSocketContext } from './contexts/ws-context';
+import React, { useEffect, useState } from 'react';
+import { useWebSocket } from './contexts/ws-context';
 import { cn } from '@/lib/utils';
 
 export function WebSocketStatusIndicator() {
-  const { socket } = useContext(WebSocketContext);
+  const { socket } = useWebSocket();
   const [status, setStatus] = useState('CLOSED');
 
   const onOpen = () => {

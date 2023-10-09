@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
 import { useRouter } from 'next/navigation';
 import { JsonObject } from 'next-auth/adapters';
@@ -119,4 +119,12 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
       {children}
     </WebSocketContext.Provider>
   );
+}
+
+export function useWebSocket() {
+  const context = useContext(WebSocketContext);
+  if (context === undefined) {
+    throw new Error('useWebSocket must be used within a WebSocketProvider');
+  }
+  return context;
 }

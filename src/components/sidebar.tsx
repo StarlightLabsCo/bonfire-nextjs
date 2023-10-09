@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
 import { Icons } from './icons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
+import { useSidebar } from './contexts/sidebar-context';
 
 const stories = ['Story 1', 'Story 2', 'Story 3', 'Story 4', 'Story 5'];
 
@@ -23,21 +23,19 @@ export function Sidebar({
         .join('')
     : '';
 
-  const [open, setOpen] = useState(true);
-  const [hidden, setHidden] = useState(false);
+  const { isSidebarOpen, closeSidebar, setShowSidebarOpen } = useSidebar();
 
   const handleTransitionEnd = () => {
-    if (!open) {
-      setHidden(true);
+    if (!isSidebarOpen) {
+      setShowSidebarOpen(true);
     }
   };
 
   return (
     <div
       className={cn(
-        'h-full overflow-x-hidden transition-[width] duration-500 ',
-        open ? 'w-[250px]' : 'w-0',
-        hidden && 'hidden',
+        'h-full overflow-x-hidden transition-[width] duration-200 ',
+        isSidebarOpen ? 'w-[250px]' : 'w-0',
       )}
       onTransitionEnd={handleTransitionEnd}
     >
@@ -53,7 +51,7 @@ export function Sidebar({
           </div>
           <div
             className="h-8 flex p-2 items-center justify-center rounded-md border border-white/10 hover:cursor-pointer"
-            onClick={() => setOpen(false)}
+            onClick={() => closeSidebar()}
           >
             <Icons.sidepanel className="w-4 h-4" />
           </div>

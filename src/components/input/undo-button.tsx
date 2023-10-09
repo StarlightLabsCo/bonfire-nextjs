@@ -1,12 +1,12 @@
-import { useContext, useEffect, useState } from 'react';
-import { MessageLike, MessagesContext } from '../contexts/messages-context';
-import { WebSocketContext } from '../contexts/ws-context';
+import { useEffect, useState } from 'react';
+import { MessageLike, useMessages } from '../contexts/messages-context';
+import { useWebSocket } from '../contexts/ws-context';
 import { MessageRole } from '@prisma/client';
 import { Icons } from '../icons';
 
 export function UndoButton() {
-  const { sendJSON, instanceId } = useContext(WebSocketContext);
-  const { messages, setMessages } = useContext(MessagesContext);
+  const { sendJSON, instanceId } = useWebSocket();
+  const { messages, setMessages } = useMessages();
 
   const [visible, setVisible] = useState<boolean>(false);
 

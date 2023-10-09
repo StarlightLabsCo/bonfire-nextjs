@@ -1,11 +1,11 @@
-import { useContext, useEffect, useState } from 'react';
-import { WebSocketContext } from '../contexts/ws-context';
-import { MessagesContext } from '../contexts/messages-context';
+import { useEffect, useState } from 'react';
+import { useWebSocket } from '../contexts/ws-context';
+import { useMessages } from '../contexts/messages-context';
 
 export function Suggestions() {
   const [suggestions, setSuggestions] = useState<string[]>([]);
-  const { sendJSON, instanceId } = useContext(WebSocketContext);
-  const { messages, setMessages } = useContext(MessagesContext);
+  const { sendJSON, instanceId } = useWebSocket();
+  const { messages, setMessages } = useMessages();
 
   useEffect(() => {
     if (messages.length > 0) {

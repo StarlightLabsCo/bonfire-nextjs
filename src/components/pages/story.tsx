@@ -1,11 +1,12 @@
 'use client';
 
-import { useContext, useEffect, useState, useRef } from 'react';
-import { MessageLike, MessagesContext } from '../contexts/messages-context';
-import { WebSocketContext } from '../contexts/ws-context';
+import { useEffect, useState, useRef } from 'react';
+import { MessageLike, useMessages } from '../contexts/messages-context';
+import { useWebSocket } from '../contexts/ws-context';
 import { Message } from '@prisma/client'; // Assuming RoleType exists
 import { IBM_Plex_Serif } from 'next/font/google';
 import { Input } from '@/components/input/input';
+import { OpenSidebar } from '../open-sidebar';
 
 export const cormorantGaramond = IBM_Plex_Serif({
   subsets: ['latin'],
@@ -23,8 +24,8 @@ export function Story({
   const lastMessageDivRef = useRef<HTMLDivElement>(null);
   const lastImageRef = useRef<HTMLImageElement>(null);
 
-  const { sendJSON, setInstanceId } = useContext(WebSocketContext);
-  const { messages, setMessages } = useContext(MessagesContext);
+  const { sendJSON, setInstanceId } = useWebSocket();
+  const { messages, setMessages } = useMessages();
 
   if (messages.length === 0) {
     setMessages(dbMessages);
@@ -91,6 +92,7 @@ export function Story({
 
   return (
     <div className="flex flex-col items-center w-full h-full px-8 pb-2 md:px-16">
+      <OpenSidebar />
       <div
         className={`${cormorantGaramond.className} h-full flex flex-col items-center w-full overflow-y-auto gap-y-8 leading-8 font-[400] text-base md:text-lg`}
       >

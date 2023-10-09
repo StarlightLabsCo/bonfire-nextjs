@@ -2,7 +2,7 @@
 
 import { Message } from '@prisma/client';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { WebSocketContext } from './ws-context';
+import { WebSocketContext, useWebSocket } from './ws-context';
 import { WebSocketResponseType } from '@/lib/websocket-schema';
 
 export type MessageLike =
@@ -20,7 +20,7 @@ export const MessagesContext = createContext<MessagesContextValue>({
 });
 
 export function MessagesProvider({ children }: { children: React.ReactNode }) {
-  const { socket } = useContext(WebSocketContext);
+  const { socket } = useWebSocket();
   const [messages, setMessages] = useState<MessageLike[]>([]);
 
   useEffect(() => {
@@ -127,3 +127,11 @@ export function MessagesProvider({ children }: { children: React.ReactNode }) {
     </MessagesContext.Provider>
   );
 }
+
+export const useMessages = () => {
+  const context = useContext(MessagesContext);
+  if (context === undefined) {
+    throw new Error('useMessages must be used within a MessagesProvider');
+  }
+  return context;
+};
