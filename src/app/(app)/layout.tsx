@@ -4,7 +4,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { WebSocketProvider } from '@/components/contexts/ws-context';
 import { AudioContextProvider } from '@/components/contexts/audio-context';
 import { MessagesProvider } from '@/components/contexts/messages-context';
-import { Sidebar } from '@/components/sidebar';
+import { Sidebar } from '@/components/sidebar/sidebar';
 import { SidebarProvider } from '@/components/contexts/sidebar-context';
 import db from '@/lib/db';
 
