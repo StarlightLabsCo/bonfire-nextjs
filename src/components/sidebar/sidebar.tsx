@@ -6,6 +6,7 @@ import { Instance } from '@prisma/client';
 import { TopActions } from './top-actions';
 import { PastStories } from './past-stories';
 import { UserInfo } from './user-info';
+import { AudioSidebar } from './audio-sidebar';
 
 export function Sidebar({
   user,
@@ -41,6 +42,7 @@ export function Sidebar({
       >
         <TopActions />
         <PastStories instances={instances} />
+        <AudioSidebar />
         <UserInfo user={user} />
       </div>
     </div>
