@@ -1,12 +1,14 @@
 'use client';
 
 import { cn } from '@/lib/utils';
-import { useSidebar } from '../contexts/sidebar-context';
 import { Instance } from '@prisma/client';
+import { usePathname } from 'next/navigation';
+import { useSidebar } from '../contexts/sidebar-context';
 import { TopActions } from './top-actions';
 import { PastStories } from './past-stories';
 import { UserInfo } from './user-info';
 import { AudioSidebar } from './audio-sidebar';
+import { useEffect, useState } from 'react';
 
 export function Sidebar({
   user,
@@ -19,7 +21,11 @@ export function Sidebar({
   };
   instances: Instance[];
 }) {
+  const pathname = usePathname();
+
   const { isSidebarOpen, setShowSidebarOpen } = useSidebar();
+  const [displayedInstances, setDisplayedInstances] =
+    useState<Instance[]>(instances);
 
   const handleTransitionEnd = () => {
     if (!isSidebarOpen) {
@@ -27,10 +33,19 @@ export function Sidebar({
     }
   };
 
+  useEffect(() => {
+    async function updateDisplayedInstances() {
+      const instances = await fetch('/api/instances').then((res) => res.json());
+      setDisplayedInstances(instances);
+    }
+
+    updateDisplayedInstances();
+  }, [pathname]);
+
   return (
     <div
       className={cn(
-        'h-full overflow-x-hidden transition-[width] duration-200 ',
+        'h-full overflow-x-hidden transition-[width] duration-200 flex-shrink-0',
         isSidebarOpen ? 'w-[250px]' : 'w-0',
       )}
       onTransitionEnd={handleTransitionEnd}
@@ -41,7 +56,7 @@ export function Sidebar({
         )}
       >
         <TopActions />
-        <PastStories instances={instances} />
+        <PastStories instances={displayedInstances} />
         <AudioSidebar />
         <UserInfo user={user} />
       </div>
