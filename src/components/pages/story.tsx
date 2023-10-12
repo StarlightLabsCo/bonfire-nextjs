@@ -23,11 +23,14 @@ export function Story({
 }) {
   const [input, setInput] = useState('');
 
-  const lastMessageDivRef = useRef<HTMLDivElement>(null);
-  const lastImageRef = useRef<HTMLImageElement>(null);
-
+  const endOfMessagesRef = useRef<HTMLDivElement>(null);
   const { sendJSON, setInstanceId } = useWebSocket();
   const { messages, setMessages } = useMessages();
+  const [latestMessage, setLatestMessage] = useState<{
+    id: string;
+    role: string;
+    words: string[];
+  }>();
 
   useEffect(() => {
     setMessages(dbMessages);
@@ -43,7 +46,6 @@ export function Story({
     });
 
     setMessages([...messages, { id: '', role: 'user', content: input }]);
-
     setInput('');
   };
 
@@ -54,43 +56,26 @@ export function Story({
   }, [instanceId, setInstanceId]);
 
   useEffect(() => {
-    if (messages.length > 0 && lastMessageDivRef.current) {
-      lastMessageDivRef.current.scrollIntoView({
+    if (endOfMessagesRef.current) {
+      endOfMessagesRef.current.scrollIntoView({
         behavior: 'smooth',
-        block: 'start',
       });
     }
   }, [messages]);
 
-  const handleImageLoad = () => {
-    if (lastImageRef.current) {
-      lastImageRef.current.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
+  useEffect(() => {
+    const lastAssistantMessage = messages
+      .filter((message) => message.role === 'assistant')
+      .slice(-1)[0];
+
+    if (lastAssistantMessage) {
+      setLatestMessage({
+        id: lastAssistantMessage.id,
+        role: lastAssistantMessage.role,
+        words: lastAssistantMessage.content.split(' '),
       });
     }
-  };
-
-  function findLastIndex<T>(
-    array: T[],
-    predicate: (value: T, index: number, array: T[]) => boolean,
-  ): number {
-    let l = array.length;
-    while (l--) {
-      if (predicate(array[l], l, array)) return l;
-    }
-    return -1;
-  }
-
-  // Find the last valid message index
-  const lastValidMessageIndex = findLastIndex(
-    messages,
-    (message: MessageLike) =>
-      message.role === 'user' ||
-      message.role === 'assistant' ||
-      (message.role === 'function' &&
-        JSON.parse(message.content).type === 'generate_image'),
-  );
+  }, [messages]);
 
   return (
     <div className="flex flex-col items-center w-full h-full px-8 pb-2 md:px-16">
@@ -98,48 +83,48 @@ export function Story({
       <div
         className={`${cormorantGaramond.className} h-full flex flex-col items-center w-full overflow-y-auto gap-y-8 leading-8 font-[400] text-base md:text-lg pt-8`}
       >
-        {messages.map((message: MessageLike, index: number) => {
-          const isLastValidMessage = index === lastValidMessageIndex;
+        {messages.map((message: MessageLike) => {
+          if (
+            message.id === latestMessage?.id &&
+            message.role === 'assistant'
+          ) {
+            return (
+              <div key={message.id} className="w-full">
+                {latestMessage.words.map((word, index) => (
+                  <span key={`${message.id}-${index}`} className="fade-in-fast">
+                    {word}{' '}
+                  </span>
+                ))}
+              </div>
+            );
+          }
 
           switch (message.role) {
             case 'user':
               return (
                 <div
-                  key={index}
-                  className="w-full pl-6 border-l-2 border-neutral-700"
-                  // Attach the ref if it's the last valid message
-                  ref={isLastValidMessage ? lastMessageDivRef : null}
+                  key={message.id}
+                  className="w-full pl-6 border-l-2 border-neutral-700 fade-in-fast"
                 >
                   <p className="text-neutral-500">{message.content}</p>
                 </div>
               );
             case 'assistant':
               return (
-                <div
-                  key={index}
-                  className="w-full"
-                  // Attach the ref if it's the last valid message
-                  ref={isLastValidMessage ? lastMessageDivRef : null}
-                >
-                  <p>{message.content}</p>
+                <div key={message.id} className="w-full fade-in-fast">
+                  {message.content}
                 </div>
               );
             case 'function':
               const data = JSON.parse(message.content);
-              if (data.type === 'generate_image') {
+              if (data.type === 'generate_image' && data.payload['imageURL']) {
                 return (
-                  <div key={index} className="w-full">
-                    {data.payload['imageURL'] && (
-                      <img
-                        src={data.payload['imageURL']}
-                        className="rounded-2xl fade-in-2s"
-                        onLoad={
-                          isLastValidMessage ? handleImageLoad : undefined
-                        }
-                        ref={isLastValidMessage ? lastImageRef : null}
-                        alt="Generated image"
-                      />
-                    )}
+                  <div key={message.id} className="w-full fade-in-fast">
+                    <img
+                      src={data.payload['imageURL']}
+                      className="rounded-2xl fade-in-2s"
+                      alt="Generated image"
+                    />
                   </div>
                 );
               } else return null;
@@ -148,7 +133,7 @@ export function Story({
               return null;
           }
         })}
-        <div ref={lastMessageDivRef}></div>
+        <div ref={endOfMessagesRef}></div>
       </div>
       <Input
         placeholder="What do you do?"
