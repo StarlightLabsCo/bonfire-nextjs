@@ -14,14 +14,15 @@ export function PastStories({ instances }: { instances: Instance[] }) {
         {instances.map((instance, index) => (
           <div
             key={index}
-            className="h-10 w-full p-2 flex items-center hover:bg-white/10 rounded-md text-xs font-light hover:cursor-pointer"
+            className="group h-10 w-full p-2 flex items-center hover:bg-white/10 rounded-md text-xs font-light hover:cursor-pointer"
             onClick={() => {
               router.push(`/instances/${instance.id}`);
             }}
           >
             <Icons.logo className="w-4 h-4 mr-2 flex-shrink-0" />
-            <div className="overflow-hidden text-ellipsis whitespace-nowrap">
-              {instance.description}
+            <div className="overflow-hidden w-full whitespace-nowrap relative">
+              <div>{instance.description}</div>
+              <div className="absolute inset-y-0 right-0 w-8 z-10 bg-gradient-to-l from-black group-hover:hidden" />
             </div>
           </div>
         ))}
