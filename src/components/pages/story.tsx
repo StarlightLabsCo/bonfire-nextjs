@@ -45,7 +45,10 @@ export function Story({
       },
     });
 
-    setMessages([...messages, { id: '', role: 'user', content: input }]);
+    setMessages([
+      ...messages,
+      { id: Date.now().toString(), role: 'user', content: input },
+    ]);
     setInput('');
   };
 
@@ -111,7 +114,8 @@ export function Story({
               );
             case 'assistant':
               return (
-                <div key={message.id} className="w-full fade-in-fast">
+                <div key={message.id} className="w-full">
+                  {/* todo: removed fade-in-fast css to prevent blink when transforming from words to full div, but now on first load they pop out of nowhere */}
                   {message.content}
                 </div>
               );

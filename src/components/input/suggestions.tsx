@@ -47,7 +47,11 @@ export function Suggestions() {
 
               setMessages([
                 ...messages,
-                { id: '', role: 'user', content: suggestion },
+                {
+                  id: Date.now().toString(),
+                  role: 'user',
+                  content: suggestion,
+                },
               ]);
 
               setSuggestions([]);
