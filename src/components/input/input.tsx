@@ -15,6 +15,7 @@ import {
 import { useWebSocket } from '../contexts/ws-context';
 import { Suggestions } from './suggestions';
 import { UndoButton } from './undo-button';
+import { ActionSuggestions } from './action-suggestions';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   value: string;
@@ -58,7 +59,7 @@ const Input: FC<InputProps> = ({
   return (
     <div className={cn(`flex flex-col w-full mt-8`, className)}>
       <div className="flex flex-wrap items-center justify-between mb-2">
-        <Suggestions />
+        <ActionSuggestions />
         <UndoButton />
       </div>
       <div className="flex items-center px-4 py-2 bg-neutral-900 rounded-2xl disabled:cursor-not-allowed disabled:opacity-50">
