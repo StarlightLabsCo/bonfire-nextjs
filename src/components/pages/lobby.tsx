@@ -1,13 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useWebSocket } from '../contexts/ws-context';
 import { User } from 'next-auth';
-import { Input } from '@/components/input/input';
 import { useMessages } from '../contexts/messages-context';
-import { cn } from '@/lib/utils';
 import { useAudioProcessor } from '../contexts/audio-context';
 import { OpenSidebar } from '../open-sidebar';
+import { LobbyInput } from '../input/lobby-input';
 
 const images = [
   'https://cdn.midjourney.com/e5622218-4a2e-454c-b363-fb2eb5ac19d4/0_3_384_N.webp',
@@ -42,36 +40,9 @@ export function Lobby({
   );
   const [imageURL, setImageURL] = useState(images[imageIndex]);
   const [animated, setAnimated] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
 
-  const [description, setDescription] = useState('');
-
-  const { sendJSON } = useWebSocket();
   const { setMessages } = useMessages();
   const { setTranscription } = useAudioProcessor();
-
-  const createWelcome = (description: string) => {
-    sendJSON({
-      type: 'welcome',
-      payload: {},
-    });
-  };
-
-  const createInstance = (description: string) => {
-    sendJSON({
-      type: 'create-instance',
-      payload: {
-        userId: user.id,
-        description: description,
-      },
-    });
-  };
-
-  const submit = () => {
-    setSubmitted(true);
-    createWelcome(description);
-    createInstance(description);
-  };
 
   useEffect(() => {
     setMessages([]);
@@ -124,14 +95,7 @@ export function Lobby({
           />
         </div>
       </div>
-      <Input
-        value={description}
-        setValue={setDescription}
-        submit={submit}
-        placeholder="Describe your adventure..."
-        disabled={submitted}
-        className={cn(submitted && 'cursor-not-allowed fade-out-2s')}
-      />
+      <LobbyInput userId={user.id} />
     </div>
   );
 }

@@ -4,10 +4,10 @@ import { useEffect, useState, useRef } from 'react';
 
 import { Message } from '@prisma/client';
 import { IBM_Plex_Serif } from 'next/font/google';
-import { Input } from '@/components/input/input';
 import { MessageLike, useMessages } from '../contexts/messages-context';
 import { useWebSocket } from '../contexts/ws-context';
 import { OpenSidebar } from '../open-sidebar';
+import { StoryInput } from '../input/story-input';
 
 export const cormorantGaramond = IBM_Plex_Serif({
   subsets: ['latin'],
@@ -21,10 +21,8 @@ export function Story({
   instanceId: string;
   dbMessages: Message[];
 }) {
-  const [input, setInput] = useState('');
-
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
-  const { sendJSON, setInstanceId } = useWebSocket();
+  const { setInstanceId } = useWebSocket();
   const { messages, setMessages } = useMessages();
   const [latestMessage, setLatestMessage] = useState<{
     id: string;
@@ -35,22 +33,6 @@ export function Story({
   useEffect(() => {
     setMessages(dbMessages);
   }, [dbMessages, instanceId, setMessages]);
-
-  const submit = () => {
-    sendJSON({
-      type: 'add-player-message',
-      payload: {
-        instanceId,
-        content: input,
-      },
-    });
-
-    setMessages([
-      ...messages,
-      { id: Date.now().toString(), role: 'user', content: input },
-    ]);
-    setInput('');
-  };
 
   useEffect(() => {
     if (instanceId && setInstanceId) {
@@ -139,12 +121,7 @@ export function Story({
         })}
         <div ref={endOfMessagesRef}></div>
       </div>
-      <Input
-        placeholder="What do you do?"
-        value={input}
-        setValue={setInput}
-        submit={submit}
-      />
+      <StoryInput instanceId={instanceId} />
     </div>
   );
 }
