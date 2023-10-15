@@ -65,17 +65,17 @@ export function Lobby({
 
           return newIndex;
         });
-      }, 5000);
+      }, 2500);
 
       // After 10s, end the animation (this will align with the completion of the CSS animation)
       setTimeout(() => {
         setAnimated(false);
-      }, 10000);
+      }, 5000);
     };
 
     cycleImage();
 
-    const interval = setInterval(cycleImage, 11000);
+    const interval = setInterval(cycleImage, 6000);
 
     return () => clearInterval(interval);
   }, []);
