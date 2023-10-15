@@ -59,7 +59,10 @@ export function LobbyInput({ userId, className }: LobbyInputProps) {
         onSelect={(suggestion) => {
           submit(suggestion);
         }}
-        className={cn(submitted && 'cursor-not-allowed fade-out-2s')}
+        className={cn(
+          'items-center justify-center w-full',
+          submitted && 'cursor-not-allowed fade-out-2s ',
+        )}
       />
     </div>
   );
