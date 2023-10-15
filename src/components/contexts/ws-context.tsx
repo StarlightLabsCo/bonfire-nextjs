@@ -11,6 +11,10 @@ interface WebSocketContextType {
   sendJSON: (data: JsonObject) => void;
   instanceId?: string | null;
   setInstanceId?: React.Dispatch<React.SetStateAction<string | null>>;
+  adventureSuggestions?: string[] | null;
+  setAdventureSuggestions?: React.Dispatch<
+    React.SetStateAction<string[] | null>
+  >;
 }
 
 export const WebSocketContext = createContext<WebSocketContextType>({
@@ -18,6 +22,8 @@ export const WebSocketContext = createContext<WebSocketContextType>({
   sendJSON: () => {},
   instanceId: null,
   setInstanceId: () => {},
+  adventureSuggestions: null,
+  setAdventureSuggestions: () => {},
 });
 
 let exponentialBackoff = 1000;
@@ -25,6 +31,9 @@ let exponentialBackoff = 1000;
 export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [instanceId, setInstanceId] = useState<string | null>(null);
+  const [adventureSuggestions, setAdventureSuggestions] = useState<
+    string[] | null
+  >(null);
 
   const router = useRouter();
   const { toast } = useToast();
@@ -42,7 +51,10 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
 
     console.log('data', data);
 
-    if (data.type === WebSocketResponseType.instance) {
+    if (data.type === WebSocketResponseType['adventure-suggestions']) {
+      setAdventureSuggestions(JSON.parse(data.payload.content).payload);
+    } else if (data.type === WebSocketResponseType.instance) {
+      setAdventureSuggestions(null);
       router.push(`/instances/${data.payload.id}`);
     } else if (data.type === WebSocketResponseType.error) {
       toast({
@@ -114,7 +126,14 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <WebSocketContext.Provider
-      value={{ socket, sendJSON, instanceId, setInstanceId }}
+      value={{
+        socket,
+        sendJSON,
+        instanceId,
+        setInstanceId,
+        adventureSuggestions,
+        setAdventureSuggestions,
+      }}
     >
       {children}
     </WebSocketContext.Provider>

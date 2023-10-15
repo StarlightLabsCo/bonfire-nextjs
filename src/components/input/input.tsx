@@ -41,7 +41,11 @@ const Input: FC<InputProps> = ({
   }
 
   if (!socket || socket.readyState !== WebSocket.OPEN) {
-    return <div>Connecting...</div>;
+    return (
+      <div className="w-full flex items-center justify-center">
+        Connecting...
+      </div>
+    );
   }
 
   return (

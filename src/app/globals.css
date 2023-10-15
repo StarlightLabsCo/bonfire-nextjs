@@ -162,10 +162,10 @@
   }
 
   .animate-image-transition {
-    animation: imageTransition 5s ease-in-out;
+    animation: imageTransition 10s ease-in-out;
   }
 
   .animate-background-transition {
-    animation: background-image-transition 5s ease-in-out;
+    animation: background-image-transition 10s ease-in-out;
   }
 }

@@ -84,7 +84,7 @@ export function AudioContextProvider({
         socket.send(JSON.stringify({ type: 'voice', payload: base64Audio }));
       } else if (event.type === 'end') {
         console.log('end');
-        socket.send(JSON.stringify({ type: 'voice-end' }));
+        socket.send(JSON.stringify({ type: 'voiceEnd' }));
       }
     };
   }, [audioRecorder, socket]);

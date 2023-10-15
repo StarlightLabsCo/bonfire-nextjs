@@ -34,7 +34,7 @@ export function ActionSuggestions() {
 
   const submitAction = (suggestion: string) => {
     sendJSON({
-      type: 'add-player-message',
+      type: 'addPlayerMessage',
       payload: {
         instanceId,
         content: suggestion,
@@ -56,7 +56,7 @@ export function ActionSuggestions() {
   return (
     <Suggestions
       suggestions={suggestions}
-      selectSuggestion={(suggestion: string) => submitAction(suggestion)}
+      onSelect={(suggestion: string) => submitAction(suggestion)}
     />
   );
 }

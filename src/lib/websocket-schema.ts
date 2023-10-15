@@ -1,4 +1,5 @@
 enum WebSocketResponseType {
+  'adventure-suggestions',
   'instance',
   'message',
   'message-append',

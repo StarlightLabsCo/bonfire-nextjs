@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Input } from './input';
 import { useWebSocket } from '../contexts/ws-context';
 import { cn } from '@/lib/utils';
+import { Suggestions } from './suggestions';
 
 interface LobbyInputProps {
   userId: string;
@@ -12,7 +13,8 @@ export function LobbyInput({ userId, className }: LobbyInputProps) {
   const [description, setDescription] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
-  const { sendJSON } = useWebSocket();
+  const { sendJSON, adventureSuggestions, setAdventureSuggestions } =
+    useWebSocket();
 
   const createWelcome = (description: string) => {
     sendJSON({
@@ -23,7 +25,7 @@ export function LobbyInput({ userId, className }: LobbyInputProps) {
 
   const createInstance = (description: string) => {
     sendJSON({
-      type: 'create-instance',
+      type: 'createInstance',
       payload: {
         userId: userId,
         description: description,
@@ -31,24 +33,32 @@ export function LobbyInput({ userId, className }: LobbyInputProps) {
     });
   };
 
-  const submit = () => {
+  const submit = (description: string) => {
     setSubmitted(true);
     createWelcome(description);
     createInstance(description);
   };
 
   return (
-    <div className={cn(`flex flex-col w-full mt-8`, className)}>
-      <div className="flex flex-wrap items-center justify-between mb-2">
-        {/* <ActionSuggestions />
-        <UndoButton /> */}
-      </div>
+    <div
+      className={cn(
+        `flex flex-col items-center gap-y-2 w-full mt-10`,
+        className,
+      )}
+    >
       <Input
         value={description}
         setValue={setDescription}
-        submit={submit}
+        submit={() => submit(description)}
         placeholder="Describe your adventure..."
         disabled={submitted}
+        className={cn(submitted && 'cursor-not-allowed fade-out-2s')}
+      />
+      <Suggestions
+        suggestions={adventureSuggestions}
+        onSelect={(suggestion) => {
+          submit(suggestion);
+        }}
         className={cn(submitted && 'cursor-not-allowed fade-out-2s')}
       />
     </div>

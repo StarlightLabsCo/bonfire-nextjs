@@ -20,7 +20,7 @@ export function StoryInput({ instanceId, className }: StoryInputProps) {
 
   const submit = () => {
     sendJSON({
-      type: 'add-player-message',
+      type: 'addPlayerMessage',
       payload: {
         instanceId,
         content: input,

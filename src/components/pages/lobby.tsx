@@ -6,8 +6,10 @@ import { useMessages } from '../contexts/messages-context';
 import { useAudioProcessor } from '../contexts/audio-context';
 import { OpenSidebar } from '../open-sidebar';
 import { LobbyInput } from '../input/lobby-input';
+import { Suggestions } from '../input/suggestions';
+import { useWebSocket } from '../contexts/ws-context';
 
-const images = [
+const exampleAdventures = [
   'https://cdn.midjourney.com/e5622218-4a2e-454c-b363-fb2eb5ac19d4/0_3_384_N.webp',
   'https://cdn.midjourney.com/ef41d5b0-9fd9-4d49-ae0c-ed00c7edf203/0_1_384_N.webp',
   'https://cdn.midjourney.com/00fb46a6-9381-429e-8214-19ad54115646/0_2_384_N.webp',
@@ -36,42 +38,44 @@ export function Lobby({
   } & User;
 }) {
   const [imageIndex, setImageIndex] = useState(
-    Math.floor(Math.random() * images.length),
+    Math.floor(Math.random() * exampleAdventures.length),
   );
-  const [imageURL, setImageURL] = useState(images[imageIndex]);
+  const [imageURL, setImageURL] = useState(exampleAdventures[imageIndex]);
   const [animated, setAnimated] = useState(false);
 
   const { setMessages } = useMessages();
   const { setTranscription } = useAudioProcessor();
 
+  // clear messages and transcription
   useEffect(() => {
     setMessages([]);
     setTranscription('');
   }, []);
 
+  // cycle images
   useEffect(() => {
     const cycleImage = () => {
       setAnimated(true);
 
-      // Set timeout for 2.5s (halfway through the animation) to swap the image
+      // Set timeout for 5 (halfway through the animation) to swap the image
       setTimeout(() => {
         setImageIndex((oldIndex) => {
-          const newIndex = (oldIndex + 1) % images.length;
-          setImageURL(images[newIndex]);
+          const newIndex = (oldIndex + 1) % exampleAdventures.length;
+          setImageURL(exampleAdventures[newIndex]);
 
           return newIndex;
         });
-      }, 2500);
+      }, 5000);
 
-      // After 5s, end the animation (this will align with the completion of the CSS animation)
+      // After 10s, end the animation (this will align with the completion of the CSS animation)
       setTimeout(() => {
         setAnimated(false);
-      }, 5000);
+      }, 10000);
     };
 
     cycleImage();
 
-    const interval = setInterval(cycleImage, 6000);
+    const interval = setInterval(cycleImage, 11000);
 
     return () => clearInterval(interval);
   }, []);

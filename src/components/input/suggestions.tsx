@@ -1,20 +1,26 @@
+import { cn } from '@/lib/utils';
+
 interface SuggestionsProps {
-  suggestions: string[];
-  selectSuggestion: (suggestion: string) => void;
+  suggestions: string[] | null | undefined;
+  onSelect: (suggestion: string) => void;
+  className?: string;
 }
 
 export function Suggestions({
   suggestions,
-  selectSuggestion,
+  onSelect,
+  className,
 }: SuggestionsProps) {
   return (
-    <div className="flex flex-row flex-wrap gap-x-2 gap-y-2">
+    <div
+      className={cn('h-10 flex flex-row flex-wrap gap-x-2 gap-y-2', className)}
+    >
       {suggestions &&
         suggestions.map((suggestion, index) => (
           <button
             key={index}
             className="px-3 py-1 border rounded-full border-neutral-900 hover:border-neutral-800 text-neutral-600 hover:text-neutral-500 fade-in-2s"
-            onClick={() => selectSuggestion(suggestion)}
+            onClick={() => onSelect(suggestion)}
           >
             <span className="text-sm font-light">{suggestion}</span>
           </button>
