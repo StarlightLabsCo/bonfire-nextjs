@@ -4,10 +4,12 @@ import { useEffect, useState } from 'react';
 import { Suggestions } from './suggestions';
 import { useWebSocket } from '../contexts/ws-context';
 import { useMessages } from '../contexts/messages-context';
+import { useAudioProcessor } from '../contexts/audio-context';
 
 export function ActionSuggestions() {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const { sendJSON, instanceId } = useWebSocket();
+  const { clearAudio } = useAudioProcessor();
   const { messages, setMessages } = useMessages();
 
   useEffect(() => {
@@ -33,6 +35,8 @@ export function ActionSuggestions() {
   }, [messages]);
 
   const submitAction = (suggestion: string) => {
+    clearAudio();
+
     sendJSON({
       type: 'addPlayerMessage',
       payload: {

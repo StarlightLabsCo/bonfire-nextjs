@@ -72,6 +72,12 @@ function setupBufferedPlayerProcessor() {
               }
               return output;
             }
+
+            clear() {
+              this.writePointer = 0;
+              this.readPointer = 0;
+              this.availableData = 0;
+            }
           }
 
           class BufferedPlayerProcessor extends AudioWorkletProcessor {
@@ -81,6 +87,8 @@ function setupBufferedPlayerProcessor() {
                   this.port.onmessage = event => {
                       if (event.data.push) {
                           this.ringBuffer.push(event.data.push);
+                      } else if (event.data.clear) {
+                        this.clearBuffer();
                       }
                   };
               }
@@ -90,6 +98,10 @@ function setupBufferedPlayerProcessor() {
                   const outputChannel = output[0];
                   outputChannel.set(this.ringBuffer.pull(outputChannel.length));
                   return true;
+              }
+
+              clearBuffer() {
+                this.ringBuffer.clear();
               }
           }
 
@@ -102,6 +114,17 @@ function setupBufferedPlayerProcessor() {
   const blobURL = URL.createObjectURL(blob);
 
   return blobURL;
+}
+
+function clearBufferedPlayerNodeBuffer(
+  bufferedPlayerNode: AudioWorkletNode | null,
+) {
+  if (bufferedPlayerNode === null) {
+    console.log('bufferedPlayerNode is null');
+    return;
+  }
+
+  bufferedPlayerNode.port.postMessage({ clear: true });
 }
 
 function bufferBase64Audio(
@@ -322,5 +345,6 @@ export {
   uint8ArrayToFloat32Array,
   setupAudio,
   bufferBase64Audio,
+  clearBufferedPlayerNodeBuffer,
   AudioRecorder,
 };

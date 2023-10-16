@@ -8,6 +8,7 @@ import { OpenSidebar } from '../open-sidebar';
 import { LobbyInput } from '../input/lobby-input';
 import { Suggestions } from '../input/suggestions';
 import { useWebSocket } from '../contexts/ws-context';
+import { clearBufferedPlayerNodeBuffer } from '@/lib/audio';
 
 const exampleAdventures = [
   'https://cdn.midjourney.com/e5622218-4a2e-454c-b363-fb2eb5ac19d4/0_3_384_N.webp',
@@ -44,12 +45,13 @@ export function Lobby({
   const [animated, setAnimated] = useState(false);
 
   const { setMessages } = useMessages();
-  const { setTranscription } = useAudioProcessor();
+  const { setTranscription, clearAudio } = useAudioProcessor();
 
   // clear messages and transcription
   useEffect(() => {
     setMessages([]);
     setTranscription('');
+    clearAudio();
   }, []);
 
   // cycle images

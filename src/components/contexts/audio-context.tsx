@@ -4,6 +4,7 @@ import {
   AudioRecorder,
   arrayBufferToBase64,
   bufferBase64Audio,
+  clearBufferedPlayerNodeBuffer,
   setupAudio,
 } from '@/lib/audio';
 import { createContext, useContext, useEffect, useState } from 'react';
@@ -14,6 +15,7 @@ interface AudioProcessorContextType {
   audioContext: AudioContext | null;
   bufferedPlayerNode: AudioWorkletNode | null;
   setVolume: (volume: number) => void;
+  clearAudio: () => void;
   audioRecorder: AudioRecorder | null;
   transcription: string;
   setTranscription: (transcription: string) => void;
@@ -23,6 +25,7 @@ export const AudioProcessorContext = createContext<AudioProcessorContextType>({
   audioContext: null,
   bufferedPlayerNode: null,
   setVolume: () => {},
+  clearAudio: () => {},
   audioRecorder: null,
   transcription: '',
   setTranscription: () => {},
@@ -33,7 +36,7 @@ export function AudioContextProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const { socket } = useWebSocket();
+  const { socket, sendJSON } = useWebSocket();
 
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
 
@@ -50,6 +53,15 @@ export function AudioContextProvider({
   function setVolume(volume: number) {
     if (!gainNode) return;
     gainNode.gain.value = Math.max(0, Math.min(1, volume));
+  }
+
+  function clearAudio() {
+    sendJSON({
+      type: 'stopAudio',
+      payload: {},
+    });
+
+    clearBufferedPlayerNodeBuffer(bufferedPlayerNode);
   }
 
   useEffect(() => {
@@ -119,6 +131,7 @@ export function AudioContextProvider({
         audioContext,
         bufferedPlayerNode,
         setVolume,
+        clearAudio,
         audioRecorder,
         transcription,
         setTranscription,
