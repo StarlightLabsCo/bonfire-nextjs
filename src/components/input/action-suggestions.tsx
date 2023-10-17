@@ -6,8 +6,17 @@ import { useWebSocket } from '../contexts/ws-context';
 import { useMessages } from '../contexts/messages-context';
 import { useAudioProcessor } from '../contexts/audio-context';
 
-export function ActionSuggestions() {
-  const [suggestions, setSuggestions] = useState<string[]>([]);
+interface ActionSuggestionsProps {
+  suggestions: string[];
+  setSuggestions: React.Dispatch<React.SetStateAction<string[]>>;
+  className?: string;
+}
+
+export function ActionSuggestions({
+  suggestions,
+  setSuggestions,
+  className,
+}: ActionSuggestionsProps) {
   const { sendJSON, instanceId } = useWebSocket();
   const { clearAudio } = useAudioProcessor();
   const { messages, setMessages } = useMessages();
@@ -61,6 +70,7 @@ export function ActionSuggestions() {
     <Suggestions
       suggestions={suggestions}
       onSelect={(suggestion: string) => submitAction(suggestion)}
+      className={className}
     />
   );
 }

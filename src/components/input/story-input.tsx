@@ -17,6 +17,7 @@ export function StoryInput({ instanceId, className }: StoryInputProps) {
   const [input, setInput] = useState('');
   const { sendJSON } = useWebSocket();
   const { messages, setMessages } = useMessages();
+  const [suggestions, setSuggestions] = useState<string[]>([]);
 
   const submit = () => {
     sendJSON({
@@ -31,13 +32,18 @@ export function StoryInput({ instanceId, className }: StoryInputProps) {
       ...messages,
       { id: Date.now().toString(), role: 'user', content: input },
     ]);
+
     setInput('');
+    setSuggestions([]);
   };
 
   return (
     <div className={cn(`flex flex-col w-full mt-8`, className)}>
       <div className="flex flex-wrap items-center justify-between mb-2">
-        <ActionSuggestions />
+        <ActionSuggestions
+          suggestions={suggestions}
+          setSuggestions={setSuggestions}
+        />
         <UndoButton />
       </div>
       <Input

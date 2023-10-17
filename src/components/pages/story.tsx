@@ -97,7 +97,6 @@ export function Story({
             case 'assistant':
               return (
                 <div key={message.id} className="w-full">
-                  {/* todo: removed fade-in-fast css to prevent blink when transforming from words to full div, but now on first load they pop out of nowhere */}
                   {message.content}
                 </div>
               );
