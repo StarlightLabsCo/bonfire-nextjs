@@ -25,7 +25,6 @@ export function Story({
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
   const { setInstanceId } = useWebSocket();
   const { messages, setMessages } = useMessages();
-  const { clearAudio } = useAudioProcessor();
   const [latestMessage, setLatestMessage] = useState<{
     id: string;
     role: string;
@@ -39,7 +38,6 @@ export function Story({
   useEffect(() => {
     if (instanceId && setInstanceId) {
       setInstanceId(instanceId);
-      clearAudio();
     }
   }, [instanceId, setInstanceId]);
 
