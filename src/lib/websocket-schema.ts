@@ -8,6 +8,7 @@ enum WebSocketResponseType {
   'suggestions',
   'audio',
   'transcription',
+  'outOfCredits',
   'error',
 }
 

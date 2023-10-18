@@ -56,6 +56,8 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     } else if (data.type === WebSocketResponseType.instance) {
       setAdventureSuggestions(null);
       router.push(`/instances/${data.payload.id}`);
+    } else if (data.type === WebSocketResponseType.outOfCredits) {
+      // Open Dialog
     } else if (data.type === WebSocketResponseType.error) {
       toast({
         title: 'Error',

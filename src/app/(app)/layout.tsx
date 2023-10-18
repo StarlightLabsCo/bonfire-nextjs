@@ -6,6 +6,9 @@ import { AudioContextProvider } from '@/components/contexts/audio-context';
 import { MessagesProvider } from '@/components/contexts/messages-context';
 import { Sidebar } from '@/components/sidebar/sidebar';
 import { SidebarProvider } from '@/components/contexts/sidebar-context';
+import { DialogProvider } from '@/components/contexts/dialog-context';
+import { OutOfCreditsDialog } from '@/components/dialog/outofcredits-dialog';
+
 import db from '@/lib/db';
 
 export default async function AppLayout({
@@ -33,13 +36,16 @@ export default async function AppLayout({
       <AudioContextProvider>
         <MessagesProvider>
           <SidebarProvider>
-            <div className="h-screen bg-neutral-950 flex">
-              <Sidebar user={user} instances={instances} />
-              <div className="flex flex-col w-full h-full max-w-5xl mx-auto">
-                <div className="h-full">{children}</div>
+            <DialogProvider>
+              <div className="h-screen bg-neutral-950 flex">
+                <Sidebar user={user} instances={instances} />
+                <div className="flex flex-col w-full h-full max-w-5xl mx-auto">
+                  <div className="h-full">{children}</div>
+                </div>
+                <Toaster />
+                <OutOfCreditsDialog />
               </div>
-              <Toaster />
-            </div>
+            </DialogProvider>
           </SidebarProvider>
         </MessagesProvider>
       </AudioContextProvider>
