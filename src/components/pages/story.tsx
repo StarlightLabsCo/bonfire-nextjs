@@ -119,6 +119,11 @@ export function Story({
               return null;
           }
         })}
+        {messages[messages.length - 1]?.role === 'user' && (
+          <div className="w-full">
+            <div className="h-2 w-2 ml-2 bg-neutral-700 fade-in-5 animate-ping rounded-full" />
+          </div>
+        )}
         <div ref={endOfMessagesRef}></div>
       </div>
       <StoryInput instanceId={instanceId} />
