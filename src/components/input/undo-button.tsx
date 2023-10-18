@@ -21,7 +21,7 @@ export function UndoButton() {
       const message = messagesCopy[i];
 
       if (message.role === MessageRole.function) {
-        const content = JSON.parse(message.content);
+        const content = message.content && JSON.parse(message.content);
 
         if (content.type === 'generate_suggestions') {
           generateSuggestionsCount++;

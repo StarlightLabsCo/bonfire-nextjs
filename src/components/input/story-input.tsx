@@ -38,7 +38,7 @@ export function StoryInput({ instanceId, className }: StoryInputProps) {
   };
 
   return (
-    <div className={cn(`flex flex-col w-full mt-8`, className)}>
+    <div className={cn(`flex flex-col w-full mt-2`, className)}>
       <div className="flex flex-wrap items-center justify-between mb-2">
         <ActionSuggestions
           suggestions={suggestions}

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Input } from './input';
 import { useWebSocket } from '../contexts/ws-context';
 import { cn } from '@/lib/utils';
@@ -6,12 +6,18 @@ import { Suggestions } from './suggestions';
 
 interface LobbyInputProps {
   userId: string;
+  submitted: boolean;
+  setSubmitted: React.Dispatch<React.SetStateAction<boolean>>;
   className?: string;
 }
 
-export function LobbyInput({ userId, className }: LobbyInputProps) {
+export function LobbyInput({
+  userId,
+  submitted,
+  setSubmitted,
+  className,
+}: LobbyInputProps) {
   const [description, setDescription] = useState('');
-  const [submitted, setSubmitted] = useState(false);
 
   const { sendJSON, adventureSuggestions, setAdventureSuggestions } =
     useWebSocket();

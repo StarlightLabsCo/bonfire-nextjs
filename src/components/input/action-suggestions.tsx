@@ -28,14 +28,21 @@ export function ActionSuggestions({
       if (lastMessage.role === 'function') {
         const lastMessageContent: {
           type: string;
-          payload: string[];
-        } = lastMessage && JSON.parse(lastMessage.content);
+          payload: any;
+        } = lastMessage.content && JSON.parse(lastMessage.content);
 
         if (
           lastMessageContent &&
           lastMessageContent.type === 'generate_suggestions'
         ) {
-          setSuggestions(lastMessageContent.payload);
+          let suggestions: string[] = lastMessageContent.payload.map(
+            (suggestion: {
+              action: string;
+              modifier: number;
+              reason: string;
+            }) => suggestion.action,
+          );
+          setSuggestions(suggestions);
         }
       }
     } else {

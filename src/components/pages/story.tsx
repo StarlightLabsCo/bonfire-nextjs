@@ -8,6 +8,7 @@ import { MessageLike, useMessages } from '../contexts/messages-context';
 import { useWebSocket } from '../contexts/ws-context';
 import { OpenSidebar } from '../open-sidebar';
 import { StoryInput } from '../input/story-input';
+import { useAudioProcessor } from '../contexts/audio-context';
 
 export const cormorantGaramond = IBM_Plex_Serif({
   subsets: ['latin'],
@@ -24,6 +25,7 @@ export function Story({
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
   const { setInstanceId } = useWebSocket();
   const { messages, setMessages } = useMessages();
+  const { clearAudio } = useAudioProcessor();
   const [latestMessage, setLatestMessage] = useState<{
     id: string;
     role: string;
@@ -37,6 +39,7 @@ export function Story({
   useEffect(() => {
     if (instanceId && setInstanceId) {
       setInstanceId(instanceId);
+      clearAudio();
     }
   }, [instanceId, setInstanceId]);
 
@@ -101,7 +104,7 @@ export function Story({
                 </div>
               );
             case 'function':
-              const data = JSON.parse(message.content);
+              const data = message.content && JSON.parse(message.content);
               if (data.type === 'generate_image' && data.payload['imageURL']) {
                 return (
                   <div key={message.id} className="w-full fade-in-fast">
