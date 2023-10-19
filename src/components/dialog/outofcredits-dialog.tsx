@@ -28,7 +28,7 @@ export function OutOfCreditsDialog() {
             </a>
           </DialogDescription>
           <DialogDescription className="text-xs pt-5 text-gray-600">
-            (We've unfortunately run out of free credits to give you.)
+            (We&apos;ve unfortunately run out of free credits to give you.)
           </DialogDescription>
         </DialogHeader>
       </DialogContent>
