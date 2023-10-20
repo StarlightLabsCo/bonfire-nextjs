@@ -6,11 +6,11 @@ import { Story } from '@/components/pages/story';
 export default async function Instance({
   params,
 }: {
-  params: { instanceId: string };
+  params: { id: string };
 }) {
   const instance = await db.instance.findUnique({
     where: {
-      id: params.instanceId,
+      id: params.id,
     },
   });
 
@@ -30,7 +30,7 @@ export default async function Instance({
   // Fetch any from db if this is hard refresh
   const messages = await db.message.findMany({
     where: {
-      instanceId: params.instanceId,
+      instanceId: params.id,
     },
     orderBy: {
       createdAt: 'asc',
@@ -38,6 +38,6 @@ export default async function Instance({
   });
 
   return (
-    <Story user={user} instanceId={params.instanceId} dbMessages={messages} />
+    <Story user={user} instanceId={params.id} dbMessages={messages} />
   );
 }
