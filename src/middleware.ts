@@ -1,6 +1,54 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
-const BLOCKED_COUNTRIES: string[] = ['KP', 'CU', 'IR', 'SY', 'VE', 'RU', 'BY']; // North Korea, Cuba, Iran, Syria, Venezuela, Russia, Belarus
+const ALLOWED_COUNTRIES: string[] = [
+  'AU',
+  'AT',
+  'BE',
+  'BR',
+  'BG',
+  'CA',
+  'HR',
+  'CY',
+  'CZ',
+  'DK',
+  'EE',
+  'FI',
+  'FR',
+  'DE',
+  'GI',
+  'GR',
+  'HK',
+  'HU',
+  'IN',
+  'ID',
+  'IE',
+  'IT',
+  'JP',
+  'LV',
+  'LI',
+  'LT',
+  'LU',
+  'MY',
+  'MT',
+  'MX',
+  'NL',
+  'NZ',
+  'NO',
+  'PL',
+  'PT',
+  'RO',
+  'SG',
+  'SK',
+  'SI',
+  'ES',
+  'SE',
+  'CH',
+  'TH',
+  'AE',
+  'GB',
+  'UM',
+  'US',
+];
 
 export function middleware(req: NextRequest) {
   // Geoblocking
@@ -9,7 +57,7 @@ export function middleware(req: NextRequest) {
   const country = req.geo.country;
   if (!country) return new Response('No country', { status: 500 });
 
-  if (BLOCKED_COUNTRIES.includes(country)) {
+  if (!ALLOWED_COUNTRIES.includes(country)) {
     console.log(`Blocked request from ${country}.`);
     return new Response('Blocked for legal reasons', { status: 451 });
   }
