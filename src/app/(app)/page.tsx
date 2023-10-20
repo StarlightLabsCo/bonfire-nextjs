@@ -2,9 +2,14 @@ import { getCurrentUser } from '@/lib/session';
 
 import { Lobby } from '@/components/pages/lobby';
 import prisma from '@/lib/db';
+import { redirect } from 'next/navigation';
 
 export default async function Home() {
   const user = await getCurrentUser();
+
+  if (!user) {
+    redirect('/login');
+  }
 
   const messages = await prisma.message.findMany({
     orderBy: {

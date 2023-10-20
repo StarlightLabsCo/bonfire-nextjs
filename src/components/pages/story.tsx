@@ -8,7 +8,7 @@ import { MessageLike, useMessages } from '../contexts/messages-context';
 import { useWebSocket } from '../contexts/ws-context';
 import { OpenSidebar } from '../open-sidebar';
 import { StoryInput } from '../input/story-input';
-import { useAudioProcessor } from '../contexts/audio-context';
+import { User } from 'next-auth';
 
 export const cormorantGaramond = IBM_Plex_Serif({
   subsets: ['latin'],
@@ -16,9 +16,13 @@ export const cormorantGaramond = IBM_Plex_Serif({
 });
 
 export function Story({
+  user,
   instanceId,
   dbMessages,
 }: {
+  user: {
+    id: string;
+  } & User;
   instanceId: string;
   dbMessages: Message[];
 }) {
@@ -65,7 +69,7 @@ export function Story({
 
   return (
     <div className="flex flex-col items-center w-full h-full px-8 pb-2 md:px-16">
-      <OpenSidebar />
+      {user && <OpenSidebar />}
       <div
         className={`${cormorantGaramond.className} h-full flex flex-col items-center w-full overflow-y-auto gap-y-8 leading-8 font-[400] text-base md:text-lg pt-8`}
       >
@@ -126,7 +130,7 @@ export function Story({
         )}
         <div ref={endOfMessagesRef}></div>
       </div>
-      <StoryInput instanceId={instanceId} />
+      {user && <StoryInput instanceId={instanceId} />}
     </div>
   );
 }

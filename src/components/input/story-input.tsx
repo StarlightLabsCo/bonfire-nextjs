@@ -7,6 +7,8 @@ import { ActionSuggestions } from './action-suggestions';
 import { UndoButton } from './undo-button';
 import { useWebSocket } from '../contexts/ws-context';
 import { useMessages } from '../contexts/messages-context';
+import { ShareButton } from './share-button';
+import { ShareLinkDialog } from '../dialog/sharelink-dialog';
 
 interface StoryInputProps {
   instanceId: string;
@@ -18,6 +20,8 @@ export function StoryInput({ instanceId, className }: StoryInputProps) {
   const { sendJSON } = useWebSocket();
   const { messages, setMessages } = useMessages();
   const [suggestions, setSuggestions] = useState<string[]>([]);
+
+  const [shareDialogueOpen, setShareDialogueOpen] = useState(false);
 
   const submit = () => {
     sendJSON({
@@ -38,20 +42,29 @@ export function StoryInput({ instanceId, className }: StoryInputProps) {
   };
 
   return (
-    <div className={cn(`flex flex-col w-full mt-2`, className)}>
-      <div className="flex flex-wrap items-center justify-between mb-2">
-        <ActionSuggestions
-          suggestions={suggestions}
-          setSuggestions={setSuggestions}
+    <>
+      <div className={cn(`flex flex-col w-full mt-2`, className)}>
+        <div className="flex flex-wrap items-center justify-between mb-2">
+          <ActionSuggestions
+            suggestions={suggestions}
+            setSuggestions={setSuggestions}
+          />
+          <div className="flex gap-x-2 h-full">
+            <UndoButton />
+            <ShareButton onClick={() => setShareDialogueOpen(true)} />
+          </div>
+        </div>
+        <Input
+          placeholder="What do you do?"
+          value={input}
+          setValue={setInput}
+          submit={submit}
         />
-        <UndoButton />
       </div>
-      <Input
-        placeholder="What do you do?"
-        value={input}
-        setValue={setInput}
-        submit={submit}
+      <ShareLinkDialog
+        isDialogOpen={shareDialogueOpen}
+        setIsDialogOpen={setShareDialogueOpen}
       />
-    </div>
+    </>
   );
 }

@@ -6,33 +6,38 @@ import { Story } from '@/components/pages/story';
 export default async function Instance({
   params,
 }: {
-  params: { instanceId: string };
+  params: { id: string };
 }) {
-  const user = await getCurrentUser();
-
-  if (!user) {
-    redirect('/login');
-  }
-
   const instance = await db.instance.findUnique({
     where: {
-      id: params.instanceId,
+      id: params.id,
     },
   });
 
-  if (!instance || instance.userId !== user.id) {
+  if (!instance) {
     redirect('/');
+  }
+
+  const user = await getCurrentUser();
+  if (!instance.public) {
+    if (!user) {
+      redirect('/');
+    } else if (instance.userId !== user.id) {
+      redirect('/');
+    }
   }
 
   // Fetch any from db if this is hard refresh
   const messages = await db.message.findMany({
     where: {
-      instanceId: params.instanceId,
+      instanceId: params.id,
     },
     orderBy: {
       createdAt: 'asc',
     },
   });
 
-  return <Story instanceId={params.instanceId} dbMessages={messages} />;
+  return (
+    <Story user={user} instanceId={params.id} dbMessages={messages} />
+  );
 }
