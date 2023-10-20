@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 
-import { Message } from '@prisma/client';
+import { Instance, Message } from '@prisma/client';
 import { IBM_Plex_Serif } from 'next/font/google';
 import { MessageLike, useMessages } from '../contexts/messages-context';
 import { useWebSocket } from '../contexts/ws-context';
@@ -17,13 +17,13 @@ export const cormorantGaramond = IBM_Plex_Serif({
 
 export function Story({
   user,
-  instanceId,
+  instance,
   dbMessages,
 }: {
   user: {
     id: string;
   } & User;
-  instanceId: string;
+  instance: Instance;
   dbMessages: Message[];
 }) {
   const endOfMessagesRef = useRef<HTMLDivElement>(null);
@@ -37,13 +37,13 @@ export function Story({
 
   useEffect(() => {
     setMessages(dbMessages);
-  }, [dbMessages, instanceId, setMessages]);
+  }, [dbMessages, instance.id, setMessages]);
 
   useEffect(() => {
-    if (instanceId && setInstanceId) {
-      setInstanceId(instanceId);
+    if (instance.id && setInstanceId) {
+      setInstanceId(instance.id);
     }
-  }, [instanceId, setInstanceId]);
+  }, [instance.id, setInstanceId]);
 
   useEffect(() => {
     if (endOfMessagesRef.current) {
@@ -130,7 +130,9 @@ export function Story({
         )}
         <div ref={endOfMessagesRef}></div>
       </div>
-      {user && <StoryInput instanceId={instanceId} />}
+      {user && user.id === instance.userId && (
+        <StoryInput instanceId={instance.id} />
+      )}
     </div>
   );
 }

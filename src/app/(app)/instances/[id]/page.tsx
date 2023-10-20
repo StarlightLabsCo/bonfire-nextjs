@@ -3,11 +3,7 @@ import { getCurrentUser } from '@/lib/session';
 import db from '@/lib/db';
 import { Story } from '@/components/pages/story';
 
-export default async function Instance({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default async function Instance({ params }: { params: { id: string } }) {
   const instance = await db.instance.findUnique({
     where: {
       id: params.id,
@@ -37,7 +33,5 @@ export default async function Instance({
     },
   });
 
-  return (
-    <Story user={user} instanceId={params.id} dbMessages={messages} />
-  );
+  return <Story user={user} instance={instance} dbMessages={messages} />;
 }

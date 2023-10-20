@@ -7,12 +7,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useDialog } from '../contexts/dialog-context';
 import { Switch } from '@/components/ui/switch';
 import { useEffect, useState } from 'react';
 import { Button } from '../ui/button';
 import { useWebSocket } from '../contexts/ws-context';
-import { toast, useToast } from '../ui/use-toast';
+import { useToast } from '../ui/use-toast';
 
 type ShareLinkDialogProps = {
   isDialogOpen: boolean;
@@ -72,10 +71,6 @@ export function ShareLinkDialog({
     const response = await fetch(`/api/instances/${instanceId}`);
 
     if (response.status !== 200) {
-      toast({
-        title: 'Error',
-        description: 'Unable to get instance status.',
-      });
       return;
     }
 
