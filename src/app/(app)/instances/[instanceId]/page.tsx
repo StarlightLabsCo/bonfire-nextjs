@@ -19,8 +19,12 @@ export default async function Instance({
   }
 
   const user = await getCurrentUser();
-  if (!instance.public && instance.userId !== user.id) {
-    redirect('/');
+  if (!instance.public) {
+    if (!user) {
+      redirect('/');
+    } else if (instance.userId !== user.id) {
+      redirect('/');
+    }
   }
 
   // Fetch any from db if this is hard refresh
