@@ -74,6 +74,19 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
         );
       }
 
+      // Fetch websocket auth token
+      let tokenRequest = await fetch('/api/websocket/', {
+        method: 'POST',
+      });
+
+      if (tokenRequest.status !== 200) {
+        console.error('Unable to fetch websocket token.');
+        return;
+      }
+
+      let token = await tokenRequest.json();
+
+      // Intialize websocket connection
       let ws = new WebSocket(process.env.NEXT_PUBLIC_BACKEND_URL);
 
       setSocket(ws);
@@ -84,25 +97,12 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
         console.log('WebSocket connection established.');
         exponentialBackoff = 1000;
 
-        async function sendAuthToken() {
-          let token = await fetch('/api/websocket/', {
-            method: 'POST',
-          }).then((res) => res.json());
-
-          if (!token) {
-            ws.close();
-            throw new Error('Unable to fetch WebSocket Auth token.');
-          }
-
-          ws.send(
-            JSON.stringify({
-              type: 'auth',
-              payload: token,
-            }),
-          );
-        }
-
-        sendAuthToken();
+        ws.send(
+          JSON.stringify({
+            type: 'auth',
+            payload: token,
+          }),
+        );
       });
 
       ws.addEventListener('error', (error) => {

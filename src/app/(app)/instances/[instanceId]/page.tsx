@@ -8,19 +8,18 @@ export default async function Instance({
 }: {
   params: { instanceId: string };
 }) {
-  const user = await getCurrentUser();
-
-  if (!user) {
-    redirect('/login');
-  }
-
   const instance = await db.instance.findUnique({
     where: {
       id: params.instanceId,
     },
   });
 
-  if (!instance || instance.userId !== user.id) {
+  if (!instance) {
+    redirect('/');
+  }
+
+  const user = await getCurrentUser();
+  if (!instance.public && instance.userId !== user.id) {
     redirect('/');
   }
 
@@ -34,5 +33,7 @@ export default async function Instance({
     },
   });
 
-  return <Story instanceId={params.instanceId} dbMessages={messages} />;
+  return (
+    <Story user={user} instanceId={params.instanceId} dbMessages={messages} />
+  );
 }

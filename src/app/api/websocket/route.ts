@@ -6,7 +6,9 @@ export async function POST(request: Request) {
   const session = await getSession();
 
   if (!session || !session.user) {
-    return NextResponse.redirect('/login');
+    return new Response(null, {
+      status: 401,
+    });
   }
 
   const token = crypto.getRandomValues(new Uint8Array(32)).join('');

@@ -10,6 +10,7 @@ import { DialogProvider } from '@/components/contexts/dialog-context';
 import { OutOfCreditsDialog } from '@/components/dialog/outofcredits-dialog';
 
 import db from '@/lib/db';
+import { Instance } from '@prisma/client';
 
 export default async function AppLayout({
   children,
@@ -18,18 +19,17 @@ export default async function AppLayout({
 }) {
   const user = await getCurrentUser();
 
-  if (!user) {
-    redirect('/login');
+  let instances: Instance[] = [];
+  if (user) {
+    instances = await db.instance.findMany({
+      where: {
+        userId: user.id,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
   }
-
-  const instances = await db.instance.findMany({
-    where: {
-      userId: user.id,
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
 
   return (
     <WebSocketProvider>
@@ -38,7 +38,7 @@ export default async function AppLayout({
           <SidebarProvider>
             <DialogProvider>
               <div className="h-screen bg-neutral-950 flex">
-                <Sidebar user={user} instances={instances} />
+                {user && <Sidebar user={user} instances={instances} />}
                 <div className="flex flex-col w-full h-full max-w-5xl mx-auto">
                   <div className="h-full">{children}</div>
                 </div>
