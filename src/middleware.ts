@@ -1,8 +1,9 @@
-import type { NextRequest } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 
 const BLOCKED_COUNTRIES: string[] = ['KP', 'CU', 'IR', 'SY', 'VE', 'RU', 'BY']; // North Korea, Cuba, Iran, Syria, Venezuela, Russia, Belarus
 
 export function middleware(req: NextRequest) {
+  // Geoblocking
   if (!req.geo) return new Response('No geo data', { status: 500 });
 
   const country = req.geo.country;
@@ -12,4 +13,6 @@ export function middleware(req: NextRequest) {
     console.log(`Blocked request from ${country}.`);
     return new Response('Blocked for legal reasons', { status: 451 });
   }
+
+  return NextResponse.next();
 }
