@@ -10,5 +10,5 @@ export async function getCurrentUser() {
 }
 
 export async function getSession() {
-  return getServerSession(authOptions);
+  return await getServerSession(authOptions);
 }

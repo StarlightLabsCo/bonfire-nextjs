@@ -1,14 +1,13 @@
 import './globals.css';
-import { Inter } from 'next/font/google';
-import { ThemeProvider } from '@/components/theme-provider';
-
-import { Analytics } from '@vercel/analytics/react';
-import {
-  PHProvider,
-  PostHogPageview,
-} from '@/components/contexts/posthog-provider';
-import PosthogIdentify from '@/components/posthog-identify';
 import { Suspense } from 'react';
+import { Inter } from 'next/font/google';
+import { PHProvider, PostHogPageview } from '@/components/posthog-provider';
+import { PosthogIdentify } from '@/components/posthog-identify';
+import { ThemeProvider } from '@/components/theme-provider';
+import { Analytics } from '@vercel/analytics/react';
+
+import { WebVitals } from '@/components/web-vitals';
+import SessionProvider from '@/components/session-provider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -28,18 +27,21 @@ export default function RootLayout({
         <PostHogPageview /> {/* https://posthog.com/docs/libraries/next-js */}
       </Suspense>
       <PHProvider>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <body className={inter.className}>
-            {children}
-            <Analytics />
-            <PosthogIdentify />
-          </body>
-        </ThemeProvider>
+        <SessionProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <body className={inter.className}>
+              {children}
+              <Analytics />
+              <PosthogIdentify />
+              <WebVitals />
+            </body>
+          </ThemeProvider>
+        </SessionProvider>
       </PHProvider>
     </html>
   );

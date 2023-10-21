@@ -3,7 +3,7 @@ import { useSession } from 'next-auth/react';
 import { usePostHog } from 'posthog-js/react';
 import { useEffect } from 'react';
 
-export default function PosthogIdentify() {
+export function PosthogIdentify() {
   const posthog = usePostHog();
   const { data: session } = useSession();
 
