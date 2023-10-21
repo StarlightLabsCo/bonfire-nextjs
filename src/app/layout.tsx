@@ -1,7 +1,14 @@
 import './globals.css';
 import { Inter } from 'next/font/google';
 import { ThemeProvider } from '@/components/theme-provider';
+
 import { Analytics } from '@vercel/analytics/react';
+import {
+  PHProvider,
+  PostHogPageview,
+} from '@/components/contexts/posthog-provider';
+import PosthogIdentify from '@/components/posthog-identify';
+import { Suspense } from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -17,17 +24,23 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <Suspense>
+        <PostHogPageview /> {/* https://posthog.com/docs/libraries/next-js */}
+      </Suspense>
+      <PHProvider>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <body className={inter.className}>
+            {children}
+            <Analytics />
+            <PosthogIdentify />
+          </body>
         </ThemeProvider>
-        <Analytics />
-      </body>
+      </PHProvider>
     </html>
   );
 }
