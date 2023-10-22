@@ -22,7 +22,7 @@ const Input: FC<InputProps> = ({
   className,
   ...props
 }) => {
-  const { socket } = useWebSocket();
+  const { socketState } = useWebSocket();
 
   const { audioRecorder, transcription, setTranscription } =
     useAudioProcessor();
@@ -40,7 +40,7 @@ const Input: FC<InputProps> = ({
     setTranscription('');
   }
 
-  if (!socket || socket.readyState !== WebSocket.OPEN) {
+  if (socketState !== 'open') {
     return (
       <div className="w-full flex items-center justify-center">
         Connecting...

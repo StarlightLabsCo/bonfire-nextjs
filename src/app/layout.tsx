@@ -25,9 +25,10 @@ export default function RootLayout({
       <Suspense>
         <PostHogPageview />
       </Suspense>
-      <PHProvider>
-        <SessionProvider>
-          <body className={inter.className}>
+
+      <body className={inter.className}>
+        <PHProvider>
+          <SessionProvider>
             <ThemeProvider
               attribute="class"
               defaultTheme="dark"
@@ -38,9 +39,9 @@ export default function RootLayout({
               <Analytics />
               <PosthogIdentify />
             </ThemeProvider>
-          </body>
-        </SessionProvider>
-      </PHProvider>
+          </SessionProvider>
+        </PHProvider>
+      </body>
     </html>
   );
 }

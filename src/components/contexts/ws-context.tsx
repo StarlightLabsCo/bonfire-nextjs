@@ -8,6 +8,7 @@ import { WebSocketResponseType } from '@/lib/websocket-schema';
 
 interface WebSocketContextType {
   socket: WebSocket | null;
+  socketState: string | null;
   sendJSON: (data: JsonObject) => void;
   instanceId?: string | null;
   setInstanceId?: React.Dispatch<React.SetStateAction<string | null>>;
@@ -19,6 +20,7 @@ interface WebSocketContextType {
 
 export const WebSocketContext = createContext<WebSocketContextType>({
   socket: null,
+  socketState: null,
   sendJSON: () => {},
   instanceId: null,
   setInstanceId: () => {},
@@ -30,6 +32,8 @@ let exponentialBackoff = 1000;
 
 export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   const [socket, setSocket] = useState<WebSocket | null>(null);
+  const [socketState, setSocketState] = useState<string | null>(null);
+
   const [instanceId, setInstanceId] = useState<string | null>(null);
   const [adventureSuggestions, setAdventureSuggestions] = useState<
     string[] | null
@@ -56,8 +60,6 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     } else if (data.type === WebSocketResponseType.instance) {
       setAdventureSuggestions(null);
       router.push(`/instances/${data.payload.id}`);
-    } else if (data.type === WebSocketResponseType.outOfCredits) {
-      // Open Dialog
     } else if (data.type === WebSocketResponseType.error) {
       toast({
         title: 'Error',
@@ -90,11 +92,14 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
       let ws = new WebSocket(process.env.NEXT_PUBLIC_BACKEND_URL);
 
       setSocket(ws);
+      setSocketState('connecting');
 
       ws.addEventListener('message', handleMessage);
 
       ws.addEventListener('open', () => {
         console.log('WebSocket connection established.');
+
+        setSocketState('open');
         exponentialBackoff = 1000;
 
         ws.send(
@@ -107,10 +112,13 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
 
       ws.addEventListener('error', (error) => {
         console.error('WebSocket error:', error);
+        ws.close();
       });
 
       ws.addEventListener('close', () => {
         setSocket(null);
+        setSocketState('closed');
+
         setTimeout(() => {
           exponentialBackoff *= 2;
           console.log('WebSocket connection closed. Reconnecting...');
@@ -130,6 +138,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     <WebSocketContext.Provider
       value={{
         socket,
+        socketState,
         sendJSON,
         instanceId,
         setInstanceId,
