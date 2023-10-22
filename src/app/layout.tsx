@@ -6,7 +6,6 @@ import { PosthogIdentify } from '@/components/posthog-identify';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Analytics } from '@vercel/analytics/react';
 
-import { WebVitals } from '@/components/web-vitals';
 import SessionProvider from '@/components/session-provider';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -24,23 +23,22 @@ export default function RootLayout({
   return (
     <html lang="en">
       <Suspense>
-        <PostHogPageview /> {/* https://posthog.com/docs/libraries/next-js */}
+        <PostHogPageview />
       </Suspense>
       <PHProvider>
         <SessionProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <body className={inter.className}>
+          <body className={inter.className}>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="dark"
+              enableSystem
+              disableTransitionOnChange
+            >
               {children}
               <Analytics />
               <PosthogIdentify />
-              <WebVitals />
-            </body>
-          </ThemeProvider>
+            </ThemeProvider>
+          </body>
         </SessionProvider>
       </PHProvider>
     </html>
