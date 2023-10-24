@@ -1,28 +1,21 @@
 const million = require('million/compiler');
+const { withSentryConfig } = require('@sentry/nextjs');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: false,
 };
 
-module.exports = million.next(
-  nextConfig, { auto: { rsc: true } }
-);
-
-
-// Injected content via Sentry wizard below
-
-const { withSentryConfig } = require("@sentry/nextjs");
-
 module.exports = withSentryConfig(
-  module.exports,
+  million.next(nextConfig, { auto: { rsc: true } }),
   {
     // For all available options, see:
     // https://github.com/getsentry/sentry-webpack-plugin#options
 
     // Suppresses source map uploading logs during build
     silent: true,
-    org: "starlightlabs",
-    project: "bonfire",
+    org: 'starlightlabs',
+    project: 'bonfire',
   },
   {
     // For all available options, see:
@@ -35,12 +28,12 @@ module.exports = withSentryConfig(
     transpileClientSDK: true,
 
     // Routes browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers (increases server load)
-    tunnelRoute: "/monitoring",
+    tunnelRoute: '/monitoring',
 
     // Hides source maps from generated client bundles
     hideSourceMaps: true,
 
     // Automatically tree-shake Sentry logger statements to reduce bundle size
     disableLogger: true,
-  }
+  },
 );

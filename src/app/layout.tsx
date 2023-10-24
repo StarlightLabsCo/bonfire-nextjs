@@ -13,6 +13,7 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata = {
   title: 'Bonfire',
   description: 'Created by Starlight Labs',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_METADATA_BASE || ''),
 };
 
 export default function RootLayout({
