@@ -1,9 +1,10 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
-import { useToast } from '@/components/ui/use-toast';
+import * as Sentry from '@sentry/nextjs';
 import { useRouter } from 'next/navigation';
 import { JsonObject } from 'next-auth/adapters';
+import { useToast } from '@/components/ui/use-toast';
 import { WebSocketResponseType } from '@/lib/websocket-schema';
 
 interface WebSocketContextType {
@@ -46,25 +47,41 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     if (socket && socket.readyState === WebSocket.OPEN) {
       socket.send(JSON.stringify(data));
     } else {
-      console.error('WebSocket is not open. Unable to send data.');
+      console.error('WebSocket is not in valid state. Unable to send data.');
+      Sentry.captureException(
+        new Error('WebSocket is not in valid state. Unable to send data.'),
+        {
+          contexts: {
+            websocket: {
+              socket: socket,
+              data: data,
+            },
+          },
+        },
+      );
     }
   };
 
   function handleMessage(event: MessageEvent) {
-    const data = JSON.parse(event.data);
+    try {
+      const data = JSON.parse(event.data);
 
-    console.log('data', data);
+      console.log('data', data);
 
-    if (data.type === WebSocketResponseType['adventure-suggestions']) {
-      setAdventureSuggestions(JSON.parse(data.payload.content).payload);
-    } else if (data.type === WebSocketResponseType.instance) {
-      setAdventureSuggestions(null);
-      router.push(`/instances/${data.payload.id}`);
-    } else if (data.type === WebSocketResponseType.error) {
-      toast({
-        title: 'Error',
-        description: data.payload.content,
-      });
+      if (data.type === WebSocketResponseType['adventure-suggestions']) {
+        setAdventureSuggestions(JSON.parse(data.payload.content).payload);
+      } else if (data.type === WebSocketResponseType.instance) {
+        setAdventureSuggestions(null);
+        router.push(`/instances/${data.payload.id}`);
+      } else if (data.type === WebSocketResponseType.error) {
+        toast({
+          title: 'Error',
+          description: data.payload.content,
+        });
+      }
+    } catch (error) {
+      console.error('Error in handling WebSocket message:', error);
+      Sentry.captureException(error);
     }
   }
 
@@ -115,12 +132,37 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
 
       ws.addEventListener('error', (error) => {
         console.error('WebSocket error:', error);
+        Sentry.captureException(error, {
+          contexts: {
+            websocket: {
+              socket: ws,
+            },
+          },
+        });
         ws.close();
       });
 
-      ws.addEventListener('close', () => {
+      ws.addEventListener('close', (event) => {
         setSocket(null);
         setSocketState('closed');
+
+        if (event.wasClean) {
+          console.log(
+            `WebSocket connection closed cleanly, code=${event.code} reason=${event.reason}`,
+          );
+          return;
+        } else {
+          console.error(
+            `WebSocket connection died, code=${event.code} reason=${event.reason}`,
+          );
+          Sentry.captureException(event, {
+            contexts: {
+              websocket: {
+                socket: ws,
+              },
+            },
+          });
+        }
 
         setTimeout(() => {
           exponentialBackoff *= 2;
