@@ -69,7 +69,10 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => {
+    console.log('WebSocketProvider mounted.');
+
     async function connect() {
+      console.log('Connecting to WebSocket...');
       if (!process.env.NEXT_PUBLIC_BACKEND_URL) {
         throw new Error(
           'NEXT_PUBLIC_BACKEND_URL environment variable is not set.',
