@@ -66,7 +66,7 @@ export function LobbyInput({
           submit(suggestion);
         }}
         className={cn(
-          'items-center justify-center w-full',
+          'items-center justify-center w-full h-10',
           submitted && 'cursor-not-allowed fade-out-2s ',
         )}
       />
