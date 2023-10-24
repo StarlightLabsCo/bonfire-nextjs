@@ -135,6 +135,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
             websocket: {
               socket: ws,
               event: event,
+              eventJSON: JSON.stringify(event),
             },
           },
         });
@@ -160,6 +161,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
               websocket: {
                 socket: ws,
                 event: event,
+                eventJSON: JSON.stringify(event),
               },
             },
           });
