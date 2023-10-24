@@ -12,18 +12,18 @@ import { useEffect, useState } from 'react';
 import { Button } from '../ui/button';
 import { useWebSocket } from '../contexts/ws-context';
 import { useToast } from '../ui/use-toast';
+import { useShareDialog } from '../contexts/share-dialog-context';
 
 type ShareLinkDialogProps = {
   isDialogOpen: boolean;
   setIsDialogOpen: (isOpen: boolean) => void;
 };
 
-export function ShareLinkDialog({
-  isDialogOpen,
-  setIsDialogOpen,
-}: ShareLinkDialogProps) {
+export function ShareLinkDialog() {
   const { instanceId } = useWebSocket();
   const { toast } = useToast();
+
+  const { isDialogOpen, setIsDialogOpen } = useShareDialog();
 
   const [checked, setChecked] = useState(false);
 

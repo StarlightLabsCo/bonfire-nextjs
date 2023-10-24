@@ -12,9 +12,7 @@ export function Suggestions({
   className,
 }: SuggestionsProps) {
   return (
-    <div
-      className={cn('h-10 flex flex-row flex-wrap gap-x-2 gap-y-2', className)}
-    >
+    <div className={cn('flex flex-row flex-wrap gap-x-2 gap-y-2', className)}>
       {suggestions &&
         suggestions.map((suggestion, index) => (
           <button
@@ -22,7 +20,7 @@ export function Suggestions({
             className="px-3 py-1 border rounded-full border-neutral-900 hover:border-neutral-800 text-neutral-600 hover:text-neutral-500 fade-in-2s"
             onClick={() => onSelect(suggestion)}
           >
-            <span className="text-sm font-light">{suggestion}</span>
+            <span className="text-xs md:text-sm font-light">{suggestion}</span>
           </button>
         ))}
     </div>

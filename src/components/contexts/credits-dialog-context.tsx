@@ -4,24 +4,22 @@ import { WebSocketResponseType } from '@/lib/websocket-schema';
 import { createContext, useState, useContext, useEffect } from 'react';
 import { useWebSocket } from './ws-context';
 
-interface DialogContextProps {
+interface OutOfCreditsDialogContextProps {
   isDialogOpen: boolean;
   setIsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const DialogContext = createContext<DialogContextProps | undefined>(
-  undefined,
-);
+export const OutOfCreditsDialogContext = createContext<
+  OutOfCreditsDialogContextProps | undefined
+>(undefined);
 
-type DialogProviderProps = {
+type OutOfCreditsDialogProviderProps = {
   children: React.ReactNode;
 };
 
-export const DialogProvider: React.FC<DialogProviderProps> = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+export const OutOfCreditsDialogProvider: React.FC<
+  OutOfCreditsDialogProviderProps
+> = ({ children }: { children: React.ReactNode }) => {
   const { socket } = useWebSocket();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -44,19 +42,19 @@ export const DialogProvider: React.FC<DialogProviderProps> = ({
   }, [socket]);
 
   return (
-    <DialogContext.Provider
+    <OutOfCreditsDialogContext.Provider
       value={{
         isDialogOpen,
         setIsDialogOpen,
       }}
     >
       {children}
-    </DialogContext.Provider>
+    </OutOfCreditsDialogContext.Provider>
   );
 };
 
-export const useDialog = () => {
-  const context = useContext(DialogContext);
+export const useOutOfCreditsDialog = () => {
+  const context = useContext(OutOfCreditsDialogContext);
   if (context === undefined) {
     throw new Error('useDialog must be used within a DialogProvider');
   }

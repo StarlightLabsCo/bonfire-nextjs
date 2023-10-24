@@ -6,11 +6,13 @@ import { AudioContextProvider } from '@/components/contexts/audio-context';
 import { MessagesProvider } from '@/components/contexts/messages-context';
 import { Sidebar } from '@/components/sidebar/sidebar';
 import { SidebarProvider } from '@/components/contexts/sidebar-context';
-import { DialogProvider } from '@/components/contexts/dialog-context';
+import { OutOfCreditsDialogProvider } from '@/components/contexts/credits-dialog-context';
 import { OutOfCreditsDialog } from '@/components/dialog/outofcredits-dialog';
 
 import db from '@/lib/db';
 import { Instance } from '@prisma/client';
+import { ShareDialogProvider } from '@/components/contexts/share-dialog-context';
+import { ShareLinkDialog } from '@/components/dialog/sharelink-dialog';
 
 export default async function AppLayout({
   children,
@@ -36,16 +38,19 @@ export default async function AppLayout({
       <AudioContextProvider>
         <MessagesProvider>
           <SidebarProvider>
-            <DialogProvider>
-              <div className="h-screen bg-neutral-950 flex">
-                {user && <Sidebar user={user} instances={instances} />}
-                <div className="flex flex-col w-full h-full max-w-5xl mx-auto">
-                  <div className="h-full">{children}</div>
+            <OutOfCreditsDialogProvider>
+              <ShareDialogProvider>
+                <div className="h-screen bg-neutral-950 flex flex-col md:flex-row">
+                  {user && <Sidebar user={user} instances={instances} />}
+                  <div className="flex flex-col w-full h-[calc(100%-2.5rem)] max-w-5xl mx-auto">
+                    <div className="h-full">{children}</div>
+                  </div>
+                  <Toaster />
+                  <OutOfCreditsDialog />
+                  <ShareLinkDialog />
                 </div>
-                <Toaster />
-                <OutOfCreditsDialog />
-              </div>
-            </DialogProvider>
+              </ShareDialogProvider>
+            </OutOfCreditsDialogProvider>
           </SidebarProvider>
         </MessagesProvider>
       </AudioContextProvider>

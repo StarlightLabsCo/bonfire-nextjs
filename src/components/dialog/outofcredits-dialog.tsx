@@ -8,10 +8,10 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { useDialog } from '../contexts/dialog-context';
+import { useOutOfCreditsDialog } from '../contexts/credits-dialog-context';
 
 export function OutOfCreditsDialog() {
-  const { isDialogOpen, setIsDialogOpen } = useDialog();
+  const { isDialogOpen, setIsDialogOpen } = useOutOfCreditsDialog();
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

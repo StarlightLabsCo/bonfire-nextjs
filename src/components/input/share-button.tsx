@@ -10,7 +10,7 @@ export function ShareButton({ className, onClick }: ShareButtonProps) {
   return (
     <button
       className={cn(
-        'flex flex-row items-center gap-x-2 text-sm px-3 py-1 h-full border rounded-full border-neutral-900 hover:border-neutral-800 text-neutral-600 hover:text-neutral-500 fade-in-2s',
+        'flex flex-row items-center gap-x-2 text-sm px-3 py-1 w-10 h-10 border rounded-full border-neutral-900 hover:border-neutral-800 text-neutral-600 hover:text-neutral-500 fade-in-2s',
         className,
       )}
       onClick={onClick}

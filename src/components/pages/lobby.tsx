@@ -7,6 +7,7 @@ import { useAudioProcessor } from '../contexts/audio-context';
 import { OpenSidebar } from '../open-sidebar';
 import { LobbyInput } from '../input/lobby-input';
 import { cn } from '@/lib/utils';
+import { useWebSocket } from '../contexts/ws-context';
 
 const loadingMessages = [
   'Preparing for adventure',
@@ -51,6 +52,7 @@ export function Lobby({
 
   const { setMessages } = useMessages();
   const { setTranscription, clearAudio } = useAudioProcessor();
+  const { setInstanceId } = useWebSocket();
 
   const [submitted, setSubmitted] = useState(false);
   const [loadingMessageVisible, setLoadingMessageVisible] = useState(false);
@@ -60,6 +62,7 @@ export function Lobby({
     setMessages([]);
     setTranscription('');
     clearAudio();
+    if (setInstanceId) setInstanceId(null);
   }, []);
 
   // cycle images
@@ -108,13 +111,13 @@ export function Lobby({
       <div className="relative flex items-center justify-center w-full">
         <div className="relative">
           <img
-            className={`absolute inset-0 object-cover h-80 w-80 mx-auto rounded-full opacity-100 aspect-1 blur-lg ${
+            className={`absolute inset-0 object-cover h-60 w-60 md:h-80 md:w-80  mx-auto rounded-full opacity-100 aspect-1 blur-lg ${
               animated ? 'animate-background-transition' : ''
             }`}
             src={imageURL}
           />
           <img
-            className={`relative object-cover h-80 w-80 mx-auto rounded-full aspect-1 -z-1 ${
+            className={`relative object-cover h-60 w-60 md:h-80 md:w-80 mx-auto rounded-full aspect-1 -z-1 ${
               animated ? 'animate-image-transition' : ''
             }`}
             src={imageURL}

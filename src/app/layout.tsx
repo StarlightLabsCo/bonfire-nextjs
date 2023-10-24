@@ -25,7 +25,6 @@ export default function RootLayout({
       <Suspense>
         <PostHogPageview />
       </Suspense>
-
       <body className={inter.className}>
         <PHProvider>
           <SessionProvider>

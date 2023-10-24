@@ -9,6 +9,7 @@ import { useWebSocket } from '../contexts/ws-context';
 import { useMessages } from '../contexts/messages-context';
 import { ShareButton } from './share-button';
 import { ShareLinkDialog } from '../dialog/sharelink-dialog';
+import { useShareDialog } from '../contexts/share-dialog-context';
 
 interface StoryInputProps {
   instanceId: string;
@@ -21,7 +22,7 @@ export function StoryInput({ instanceId, className }: StoryInputProps) {
   const { messages, setMessages } = useMessages();
   const [suggestions, setSuggestions] = useState<string[]>([]);
 
-  const [shareDialogueOpen, setShareDialogueOpen] = useState(false);
+  const { setIsDialogOpen } = useShareDialog();
 
   const submit = () => {
     sendJSON({
@@ -44,14 +45,18 @@ export function StoryInput({ instanceId, className }: StoryInputProps) {
   return (
     <>
       <div className={cn(`flex flex-col w-full mt-2`, className)}>
-        <div className="flex flex-wrap items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-2">
           <ActionSuggestions
             suggestions={suggestions}
             setSuggestions={setSuggestions}
+            className="text-xs "
           />
-          <div className="flex gap-x-2 h-full">
+          <div className="flex gap-x-2 items-center h-full">
             <UndoButton />
-            <ShareButton onClick={() => setShareDialogueOpen(true)} />
+            <ShareButton
+              className="hidden md:block"
+              onClick={() => setIsDialogOpen(true)}
+            />
           </div>
         </div>
         <Input
@@ -61,10 +66,6 @@ export function StoryInput({ instanceId, className }: StoryInputProps) {
           submit={submit}
         />
       </div>
-      <ShareLinkDialog
-        isDialogOpen={shareDialogueOpen}
-        setIsDialogOpen={setShareDialogueOpen}
-      />
     </>
   );
 }

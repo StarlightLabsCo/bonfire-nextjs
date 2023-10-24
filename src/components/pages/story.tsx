@@ -71,7 +71,7 @@ export function Story({
     <div className="flex flex-col items-center w-full h-full px-8 pb-2 md:px-16">
       {user && <OpenSidebar />}
       <div
-        className={`${cormorantGaramond.className} h-full flex flex-col items-center w-full overflow-y-auto gap-y-8 leading-8 font-[400] text-base md:text-lg pt-8`}
+        className={`${cormorantGaramond.className} h-full flex flex-col items-center w-full overflow-y-auto gap-y-8 leading-8 font-[400] text-sm md:text-lg pt-8`}
       >
         {messages.map((message: MessageLike) => {
           if (
@@ -128,7 +128,7 @@ export function Story({
             <div className="h-2 w-2 ml-2 bg-neutral-700 fade-in-5 animate-ping rounded-full" />
           </div>
         )}
-        <div ref={endOfMessagesRef}></div>
+        <div ref={endOfMessagesRef} />
       </div>
       {user && user.id === instance.userId && (
         <StoryInput instanceId={instance.id} />
