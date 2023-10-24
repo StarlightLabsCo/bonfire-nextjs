@@ -128,15 +128,17 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
         );
       });
 
-      ws.addEventListener('error', (error) => {
-        console.error('WebSocket error:', error);
-        Sentry.captureException(error, {
+      ws.addEventListener('error', (event) => {
+        console.error('WebSocket error:', event);
+        Sentry.captureException(event, {
           contexts: {
             websocket: {
               socket: ws,
+              event: event,
             },
           },
         });
+
         ws.close();
       });
 
@@ -157,6 +159,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
             contexts: {
               websocket: {
                 socket: ws,
+                event: event,
               },
             },
           });
