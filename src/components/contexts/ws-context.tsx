@@ -66,8 +66,6 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
     try {
       const data = JSON.parse(event.data);
 
-      console.log('data', data);
-
       if (data.type === WebSocketResponseType['adventure-suggestions']) {
         setAdventureSuggestions(JSON.parse(data.payload.content).payload);
       } else if (data.type === WebSocketResponseType.instance) {
