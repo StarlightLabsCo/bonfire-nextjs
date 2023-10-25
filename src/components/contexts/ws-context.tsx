@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import * as Sentry from '@sentry/nextjs';
 import { useRouter } from 'next/navigation';
 import { JsonObject } from 'next-auth/adapters';
@@ -35,6 +35,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [socketState, setSocketState] = useState<string | null>(null);
 
+  const connectionIdRef = useRef<string | null>(null);
   const [instanceId, setInstanceId] = useState<string | null>(null);
   const [adventureSuggestions, setAdventureSuggestions] = useState<
     string[] | null
@@ -104,7 +105,7 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      let token = await tokenRequest.json();
+      let response = await tokenRequest.json();
 
       // Intialize websocket connection
       let ws = new WebSocket(process.env.NEXT_PUBLIC_BACKEND_URL);
@@ -120,10 +121,18 @@ export function WebSocketProvider({ children }: { children: React.ReactNode }) {
         setSocketState('open');
         exponentialBackoff = 1000;
 
+        if (!connectionIdRef.current) {
+          console.log('Generating new connectionId...');
+          connectionIdRef.current = Math.random().toString(36).substring(2, 15);
+        }
+
         ws.send(
           JSON.stringify({
             type: 'auth',
-            payload: token,
+            payload: {
+              token: response.token,
+              connectionId: connectionIdRef.current,
+            },
           }),
         );
       });

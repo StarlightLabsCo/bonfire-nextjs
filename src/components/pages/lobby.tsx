@@ -52,7 +52,7 @@ export function Lobby({
 
   const { setMessages } = useMessages();
   const { setTranscription, clearAudio } = useAudioProcessor();
-  const { setInstanceId } = useWebSocket();
+  const { setInstanceId, sendJSON } = useWebSocket();
 
   const [submitted, setSubmitted] = useState(false);
   const [loadingMessageVisible, setLoadingMessageVisible] = useState(false);

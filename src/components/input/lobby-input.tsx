@@ -19,8 +19,7 @@ export function LobbyInput({
 }: LobbyInputProps) {
   const [description, setDescription] = useState('');
 
-  const { sendJSON, adventureSuggestions, setAdventureSuggestions } =
-    useWebSocket();
+  const { sendJSON, adventureSuggestions, socketState } = useWebSocket();
 
   const createWelcome = (description: string) => {
     sendJSON({
@@ -44,6 +43,17 @@ export function LobbyInput({
     createWelcome(description);
     createInstance(description);
   };
+
+  useEffect(() => {
+    if (socketState == 'open' && adventureSuggestions == null) {
+      setTimeout(() => {
+        sendJSON({
+          type: 'generateAdventureSuggestions',
+          payload: {},
+        });
+      }, 250);
+    }
+  }, [adventureSuggestions, sendJSON, socketState]);
 
   return (
     <div
