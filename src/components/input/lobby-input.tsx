@@ -51,7 +51,7 @@ export function LobbyInput({
           type: 'generateAdventureSuggestions',
           payload: {},
         });
-      }, 250);
+      }, 1000);
     }
   }, [adventureSuggestions, sendJSON, socketState]);
 
