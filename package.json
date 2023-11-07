@@ -24,6 +24,7 @@
     "@radix-ui/react-switch": "latest",
     "@radix-ui/react-toast": "latest",
     "tailwind-merge": "latest",
+    "tailwindcss-animate": "latest",
     "@auth/prisma-adapter": "^1.0.2",
     "prisma": "latest",
     "autoprefixer": "10.4.16",
