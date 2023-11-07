@@ -38,6 +38,7 @@
     "typescript": "5.2.2",
     "@tailwindcss/aspect-ratio": "latest",
     "@types/node": "latest",
-    "eslint": "latest"
+    "eslint": "latest",
+    "posthog-node": "latest"
   }
 }
