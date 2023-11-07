@@ -17,6 +17,7 @@
     "@radix-ui/react-slot": "latest",
     "next-themes": "latest",
     "@vercel/analytics": "latest",
+    "class-variance-authority": "latest",
     "@auth/prisma-adapter": "^1.0.2",
     "prisma": "latest",
     "autoprefixer": "10.4.16",
