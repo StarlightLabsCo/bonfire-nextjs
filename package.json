@@ -37,6 +37,7 @@
     "tailwindcss": "3.3.3",
     "typescript": "5.2.2",
     "@tailwindcss/aspect-ratio": "latest",
-    "@types/node": "latest"
+    "@types/node": "latest",
+    "eslint": "latest"
   }
 }
