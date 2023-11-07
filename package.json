@@ -12,7 +12,6 @@
   "dependencies": {
     "@sentry/nextjs": "^7.74.0",
     "posthog-js": "latest",
-    "posthog-js/react": "latest",
     "@radix-ui/react-icons": "latest",
     "@auth/prisma-adapter": "^1.0.2",
     "prisma": "latest",
